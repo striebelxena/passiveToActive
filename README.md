@@ -3,6 +3,17 @@ passiveToActive-with-NLP
 
 This is a ruled-based passive to active transformer to transform regulatory passive sentences to active sentences.
 
+======================
+Project Plan
+--------------------------
+Basic pipeline:
+1. Check for passive voice
+2. Parsing and POS tagging 
+3. Dependency parsing 
+4. Verb conjugation
+5. Rule-based transformation
+==========================
+-------------------
 Project Organization
 ------------
 
