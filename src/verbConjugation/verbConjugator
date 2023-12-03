@@ -1,0 +1,14 @@
+from pattern.en import conjugate, lemma, PRESENT, SG
+
+# Sample verb conjugation
+passive_verb = "shall be adopted "
+active_verb_base = lemma(passive_verb)  # Get base form of the verb
+active_verb = conjugate(active_verb_base, tense=PRESENT, number=SG)
+
+print(f"Conjugated Verb: {active_verb}")
+
+# Output:
+# Conjugated Verb: throw
+# Path: src/requirements.txt
+# pattern==3.6
+# Path: src/verbConjugation/verbConjugator
