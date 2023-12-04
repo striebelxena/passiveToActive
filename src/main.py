@@ -9,6 +9,8 @@ sentence = "Federal laws shall be adopted by the Bundestag."
 # Process the sentence
 doc = nlp(sentence)
 
+print(spacy_parse(sentence))
+
 # POS Tagging
 for token in doc:
     print(f"Word: {token.text}, POS Tag: {token.pos_}")
