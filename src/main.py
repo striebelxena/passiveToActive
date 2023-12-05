@@ -1,28 +1,28 @@
 import spacy
+import checkForPassive.passiveCheck as passiveCheck
+import parsingPOSTagging.sentenceParser as analyseSentence
+import verbConjugation.verbConjugator as verbConjugator
+import transformation.transformer as transformer
 
-# Load the English NLP model
-nlp = spacy.load("en_core_web_sm")
+# Load NLP model
+nlp = spacy.load("en_core_web_md")
 
 # Example sentence
-sentence = "Federal laws shall be adopted by the Bundestag."
+# sentence = "Federal laws shall be adopted by the Bundestag."
+sentence=input('\n\nPassive sentence:\n\n')
 
-# Process the sentence
 doc = nlp(sentence)
 
-print(spacy_parse(sentence))
+# check if the sentence is passive
+isPassive = passiveCheck.checkForPassive(doc)
+if (isPassive != True):
+    print("Sentence is not passive")
+    exit()
+else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
+   analyseSentence.analyseSentence(doc)
+   verbActive = verbConjugator.conjugateVerb(doc)
+   transformedSentence = transformer.transformSentence(doc, verbActive)
 
-# POS Tagging
-for token in doc:
-    print(f"Word: {token.text}, POS Tag: {token.pos_}")
-
-# Dependency Parsing
-for token in doc:
-    print(f"Word: {token.text}, Dependency: {token.dep_}, Head: {token.head.text}")
-
-# Named Entity Recognition
-for ent in doc.ents:
-    print(f"Entity: {ent.text}, Label: {ent.label_}")
-
-# Path: src/requirements.txt
-# spacy==2.3.2
-# en_core_web_sm==2.3.1
+print(f"Passive Sentence: {doc}")
+print(f"Active Sentence: {transformedSentence}")
+print('\n')

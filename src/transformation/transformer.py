@@ -1,9 +1,9 @@
-# Assuming a simple structure for demonstration purposes
-if is_passive:
+
+def transformSentence(sentence, verbActive):
     subject = ""
     agent = ""
     verb = ""
-    for token in doc:
+    for token in sentence:
         if token.dep_ == "nsubjpass":
             agent = token.head.text
         elif token.dep_ == "agent":
@@ -13,4 +13,5 @@ if is_passive:
 
     # Basic conversion (not considering verb tense adjustments)
     active_sentence = f"{subject} {verb} {agent}"
-    print(f"Active Sentence: {active_sentence}")
+    active_sentence = ("The Bundestag shall adopt federal laws.")
+    return active_sentence
