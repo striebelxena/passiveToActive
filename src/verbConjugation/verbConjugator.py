@@ -1,4 +1,5 @@
-import pattern as pattern
+#import pattern as pattern
+import pattern3.text.en as en
 
 
 # Sample verb conjugation
@@ -9,6 +10,7 @@ def conjugateVerb(sentence):
     # active_verb = conjugate(active_verb_base, tense=PRESENT, number=SG)
     # Output:
     active_verb = "shall adopt"
+    
 
 
     return active_verb
