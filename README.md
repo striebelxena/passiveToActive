@@ -1,24 +1,45 @@
 passiveToActive-with-NLP
-==============================
+========================
 
 This is a ruled-based passive to active transformer to transform regulatory passive sentences to active sentences.
 
-======================
+---
+
+## **Installation**
+
+run:
+
+```python
+pip install spacy
+pip install Pattern3
+
+
+```
+
+Install spacy modell:
+
+```python
+python -m spacy download en_core_web_md
+```
+
 Project Plan
---------------------------
-Basic pipeline:
-1. Check for passive voice
-2. Parsing and POS tagging 
-3. Dependency parsing 
-4. Verb conjugation
-5. Rule-based transformation
-==========================
--------------------
-Project Organization
 ------------
 
+Basic pipeline:
+
+1. Check for passive voice
+2. Parsing and POS tagging
+3. Dependency parsing
+4. Verb conjugation
+5. Rule-based transformation
+
+---
+
+Project Organization
+--------------------
+
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
+    ├── Makefile           <- Makefile with commands like`make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
@@ -62,7 +83,6 @@ Project Organization
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
-
---------
+---
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
