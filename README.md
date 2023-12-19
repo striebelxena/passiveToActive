@@ -19,7 +19,8 @@ pip install Pattern3
 Install spacy modell:
 
 ```python
-python -m spacy download en_core_web_md
+python -m spacy download en_core_web_lg
+
 ```
 
 Project Plan

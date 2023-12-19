@@ -5,7 +5,7 @@ import verbConjugation.verbConjugator as verbConjugator
 import transformation.transformer as transformer
 
 # Load NLP model
-nlp = spacy.load("en_core_web_md")
+nlp = spacy.load("en_core_web_lg")
 
 # Example sentence
 # sentence = "Federal laws shall be adopted by the Bundestag."
@@ -19,10 +19,10 @@ if (isPassive != True):
     print("Sentence is not passive")
     exit()
 else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
-   analyseSentence.analyseSentence(doc)
-   verbActive = verbConjugator.conjugateVerb(doc)
+   analysis_results = analyseSentence.analyseSentence(doc)
+   print(f"results: {analysis_results}")
+   verbActive = verbConjugator.conjugateVerb(analysis_results.get('verbLemma'), analysis_results.get('verbTense'), analysis_results.get('aNumber'))
    transformedSentence = transformer.transformSentence(doc, verbActive)
 
 print(f"Passive Sentence: {doc}")
-print(f"Active Sentence: {transformedSentence}")
 print('\n')
