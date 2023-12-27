@@ -1,17 +1,25 @@
+import transformation.nounInversion as ni
 
-def transformSentence(sentence, verbActive):
-    subject = ""
-    agent = ""
-    verb = ""
-    for token in sentence:
-        if token.dep_ == "nsubjpass":
-            agent = token.head.text
-        elif token.dep_ == "agent":
-            subject = ''.join([child.text for child in token.children if child.dep_ == "pobj"])
-        if token.pos_ == "VERB":
-            verb = token.text
+
+
+def transformSentence(data, verbActive):
+ 
+    verb = verbActive
+    agent = data.get('agent')
+    subjpass = ni.inversion(data.get('subjpass'))
+
+
+     
+    if agent != 'one':
+          agent = ni.inversion(agent)
+
+    
+    
+    subject = agent
+    object =subjpass
+    
 
     # Basic conversion (not considering verb tense adjustments)
-    active_sentence = f"{subject} {verb} {agent}"
-    active_sentence = ("The Bundestag shall adopt federal laws.")
+    active_sentence = f"{subject} {verb} {object}"
+    print(f"Active Sentence: {active_sentence}")
     return active_sentence

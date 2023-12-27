@@ -11,15 +11,16 @@ def analyseSentence(sentence):
     subj = ''
     verb = ''
     verbTense = ''
-    verbPerson = ''
+    verbPerson = '1'
     verbMood = ''
+    verbAspect = ''
     adverb = {'bef':'', 'aft':''}
     part = ''
     prep = ''
     agent = ''
     agentExists = False
     aplural = False
-    aNumber = 'SINGULAR'
+    aNumber = en.SINGULAR
     subtree = None
     aux = list(list(nlp('. .').sents)[0]) # start with 2 'null' elements
     xcomp = ''
@@ -41,9 +42,7 @@ def analyseSentence(sentence):
         print(f"morph Voice: {word.morph.get('Voice')}")
         print(f"morph Aspect: {word.morph.get('Aspect')}")
         print(f"morph Case: {word.morph.get('Case')}")        
-
         print(f"Head: {word.head}")
-
         print(f"Head dep: {word.head.dep_}")
         print(word.subtree)
         print("Subtree:")
@@ -72,34 +71,43 @@ def analyseSentence(sentence):
         if word.dep_ == 'auxpass': 
             verbForm = word.morph.get('VerbForm')
             print(verbForm)
-            if 'Inf' in verbForm:
+            if word.tag_ == 'VBZ': #3rd person singular
+                verbPerson = en.THIRD
+                verbTense = en.PRESENT
+            elif word.tag_ == 'VB':
+                    verbTense = en.PRESENT #if auxpass is infinitive, the active verb should be present
+            elif word.tag_ == 'VBD':
+                        verbTense = en.PAST
+            elif word.tag_ == 'VBG':
+                        verbTense = en.PRESENT
+                        verbAspect = en.PROGRESSIVE
+            elif word.tag_ == 'VBN':
+                        verbTense = en.PAST
+            elif word.tag_ == 'VBN':
+                verbTense = 'PAST PARTICIPLE'
+            elif word.tag_ == 'VBP' or word.tag_ == 'VBZ':
+                verbTense = en.PRESENT
+            elif word.tag_ == 'MD':
+                verbTense = en.FUTURE
+            else:
+                verbTense = en.tenses(word.text)[0][0]
+            """if 'Inf' in verbForm:
                 print("Infinitive found")
-                verbTense = 'PRESENT'
+                verbTense = en.PRESENT
             else:
                 verbTense = word.morph.get('Tense')
             if word.head.dep_ in ('ROOT', 'advcl'): 
-                """if not subjpass: # if no nsubjpass is found:
+                if not subjpass: # if no nsubjpass is found:
                     subjpass = subj"""
+        if word.tag_ == 'MD' and word.lemma != 'have':
+             aplural = "true"
         if word.dep_ in ('aux','auxpass','neg'):
             if word.head.dep_ == 'ROOT':
                 aux += [word]
         if word.dep_ == 'ROOT':
             verb = word.text
             verbLemma = word.lemma_
-            """if word.tag_ == 'VBZ': #3rd person singular
-                verbnumber = 'SINGULAR'
-                verbperson = 'THIRD'
-            elif word.tag_ == 'VB': #Infinitive
-                verbtense = 'INFINITIVE'
-            elif word.tag_ == 'VBD': #Past Tense
-                verbtense = 'PAST'
-            elif word.tag_ == 'VBG': #Gerund
-                verbtense = 'PRESENT'
-                verbaspect = 'PROGRESSIVE'
-            elif word.tag_ == 'VBN':
-                verbtense = 'PAST PARTICIPLE'
-            else:
-                verbtense = en.tenses(word.text)[0][0]"""
+           
         if word.dep_ == 'prt':
             if word.head.dep_ == 'ROOT':
                 part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -128,7 +136,7 @@ def analyseSentence(sentence):
         agent = "one"
     
     if aplural:
-        aNumber = 'PLURAL'
+        aNumber = en.PLURAL
 
     print(f"subjpass: {subjpass}")
     print(f"subj: {subj}")
@@ -141,6 +149,7 @@ def analyseSentence(sentence):
     print(f"part: {part}")
     print(f"prep: {prep}")
     print(f"agent: {agent}")
+
     print(f"aplural: {aplural}")
 
     print(f"subtree: {subtree}")
@@ -159,6 +168,7 @@ def analyseSentence(sentence):
         "verbForm": verbForm,
         "verbTense": verbTense,
         "verbPerson": verbPerson,
+        "verbAspect": verbAspect,
         "verbMood": verbMood,
         "adverb": adverb,
         "part": part,

@@ -1,4 +1,5 @@
 import spacy
+import pattern_patch 
 import checkForPassive.passiveCheck as passiveCheck
 import parsingPOSTagging.sentenceParser as analyseSentence
 import verbConjugation.verbConjugator as verbConjugator
@@ -7,12 +8,23 @@ import transformation.transformer as transformer
 # Load NLP model
 nlp = spacy.load("en_core_web_lg")
 
+
 # Example sentence
 # sentence = "Federal laws shall be adopted by the Bundestag."
 sentence=input('\n\nPassive sentence:\n\n')
 
 doc = nlp(sentence)
-
+pipeDoc = list(nlp.pipe(sentence))
+makedoc = nlp.make_doc(sentence)
+print("doc")
+print(doc)
+print("pipeDoc")
+print(pipeDoc)
+print("makedoc")
+print(makedoc)
+print("cats")
+print(doc.cats)
+print(nlp.pipe_names)
 # check if the sentence is passive
 isPassive = passiveCheck.checkForPassive(doc)
 if (isPassive != True):
@@ -21,8 +33,8 @@ if (isPassive != True):
 else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
    analysis_results = analyseSentence.analyseSentence(doc)
    print(f"results: {analysis_results}")
-   verbActive = verbConjugator.conjugateVerb(analysis_results.get('verbLemma'), analysis_results.get('verbTense'), analysis_results.get('aNumber'))
-   transformedSentence = transformer.transformSentence(doc, verbActive)
+   verbActive = verbConjugator.conjugateVerb(analysis_results, analysis_results.get('verbLemma'), analysis_results.get('verbTense'), analysis_results.get('aux'),analysis_results.get('aNumber'))
+   transformedSentence = transformer.transformSentence(analysis_results, verbActive)
 
 print(f"Passive Sentence: {doc}")
 print('\n')
