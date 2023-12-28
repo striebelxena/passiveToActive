@@ -53,11 +53,10 @@ def conjugateVerb(data):
            elif c.lemma_ == 'have':
                 num = pat.PLURAL if l.tag_ == 'MD' else num
                 final_aux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
-                    #verbtense = pat.tenses(n.text)[0][0]
-           elif c.tag_ == 'MD':
+           
+           elif c.tag_ == 'MD' or c.tag_ == 'NN':
                 num = pat.PLURAL
                 final_aux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
-                    #verbtense = pat.tenses(n.text)[0][0]
            else:
                 final_aux += c.text_with_ws
         final_aux = final_aux.lower().strip()    

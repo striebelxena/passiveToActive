@@ -74,6 +74,8 @@ def analyseSentence(sentence):
                         verbAspect = en.PARTICIPLE
                         verbTense = en.PAST
                         verbForm = en.PARTICIPLE
+            if sentence[word.i-1].lemma_ == 'will':    
+                        verbTense = en.PRESENT
             elif word.tag_ == 'VBZ': #3rd person singular
                 verbPerson = en.THIRD
                 verbTense = en.PRESENT
