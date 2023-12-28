@@ -33,7 +33,7 @@ if (isPassive != True):
 else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
    analysis_results = analyseSentence.analyseSentence(doc)
    print(f"results: {analysis_results}")
-   verbActive = verbConjugator.conjugateVerb(analysis_results, analysis_results.get('verbLemma'), analysis_results.get('verbTense'), analysis_results.get('aux'),analysis_results.get('aNumber'))
+   verbActive = verbConjugator.conjugateVerb(analysis_results)
    transformedSentence = transformer.transformSentence(analysis_results, verbActive)
 
 print(f"Passive Sentence: {doc}")

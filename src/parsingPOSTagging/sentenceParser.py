@@ -1,5 +1,5 @@
 import spacy
-import pattern3.text.en as en
+import pattern.text.en as en
 
 nlp = spacy.load("en_core_web_lg")
 
@@ -70,8 +70,11 @@ def analyseSentence(sentence):
                     adverb['aft'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'auxpass': 
             verbForm = word.morph.get('VerbForm')
-            print(verbForm)
-            if word.tag_ == 'VBZ': #3rd person singular
+            if sentence[word.i-1].lemma_ == 'have':    
+                        verbAspect = en.PARTICIPLE
+                        verbTense = en.PAST
+                        verbForm = en.PARTICIPLE
+            elif word.tag_ == 'VBZ': #3rd person singular
                 verbPerson = en.THIRD
                 verbTense = en.PRESENT
             elif word.tag_ == 'VB':
@@ -83,12 +86,11 @@ def analyseSentence(sentence):
                         verbAspect = en.PROGRESSIVE
             elif word.tag_ == 'VBN':
                         verbTense = en.PAST
-            elif word.tag_ == 'VBN':
-                verbTense = 'PAST PARTICIPLE'
+           
             elif word.tag_ == 'VBP' or word.tag_ == 'VBZ':
                 verbTense = en.PRESENT
             elif word.tag_ == 'MD':
-                verbTense = en.FUTURE
+                verbTense = en.PRESENT
             else:
                 verbTense = en.tenses(word.text)[0][0]
             """if 'Inf' in verbForm:
@@ -99,8 +101,7 @@ def analyseSentence(sentence):
             if word.head.dep_ in ('ROOT', 'advcl'): 
                 if not subjpass: # if no nsubjpass is found:
                     subjpass = subj"""
-        if word.tag_ == 'MD' and word.lemma != 'have':
-             aplural = "true"
+
         if word.dep_ in ('aux','auxpass','neg'):
             if word.head.dep_ == 'ROOT':
                 aux += [word]
@@ -134,6 +135,7 @@ def analyseSentence(sentence):
                 punc = word.text"""
     if not agentExists: # if no agent is found:
         agent = "one"
+        aplural = False
     
     if aplural:
         aNumber = en.PLURAL
