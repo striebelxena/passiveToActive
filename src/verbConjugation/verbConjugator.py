@@ -1,7 +1,9 @@
 import pattern_patch 
 import pattern.text.en as pat
 import spacy
-nlp = spacy.load("en_core_web_lg", disable=["ner", "parser", "tok2vec", "textcat", "attribute_ruler"])
+nlp = spacy.load("en_core_web_lg")
+#thirdPerson = pat.conjugate('have',tense='present',person=3, number=pat.SINGULAR) 
+#print(thirdPerson)
 
 #  verb conjugation
 def conjugateVerb(data):
@@ -52,9 +54,14 @@ def conjugateVerb(data):
                
            elif c.lemma_ == 'have':
                 num = pat.PLURAL if l.tag_ == 'MD' else num
-                final_aux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
-           
-           elif c.tag_ == 'MD' or c.tag_ == 'NN':
+                if num == 'singular':
+                    print("third person")
+                    print(pat.tenses(c.text)[0][0])
+                    if pat.tenses(c.text)[0][0] == 'infinitive':
+                        final_aux += pat.conjugate('have',tense='present',person=3, number=num) + ' '
+                else:
+                    final_aux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
+           elif c.tag_ == 'MD' or c.lemma_ == 'will':
                 num = pat.PLURAL
                 final_aux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
            else:
@@ -62,6 +69,7 @@ def conjugateVerb(data):
         final_aux = final_aux.lower().strip()    
 
          # conjugate main verb:
+        print("Num: " + str(num))
         if verbAspect:
             verbActive = pat.conjugate(verbLemma,tense=tense,aspect=verbAspect, number=num)
         else:
