@@ -4,7 +4,7 @@ import pattern.text.en as en
 nlp = spacy.load("en_core_web_lg")
 
 
-def analyseSentence(sentence):
+def analyseSentence(sentence, source):
 
     # Init parts of sentence to capture:
     subjpass = ''
@@ -14,10 +14,12 @@ def analyseSentence(sentence):
     verbPerson = '1'
     verbMood = ''
     verbAspect = ''
+    verbAddition = ''
     adverb = {'bef':'', 'aft':''}
     part = ''
     prepAtStart = ''
     prep = list()
+    mark = ''
     agent = ''
     agentExists = False
     aplural = False
@@ -27,35 +29,51 @@ def analyseSentence(sentence):
     aux = list(list(nlp('. .').sents)[0]) # start with 2 'null' elements
     xcomp = ''
     punc = '.'
+    wsubjpass = ''
+    found_sent_start = False
+    subclause = ''
+    structure = list()
     
     print("cltree")
     print(cltree)
 
 
+    # General analysis of sentence structure
     for word in sentence:
-        print(f"Text: {word.text}")
-        print(f"Part of Speech: {word.pos_}") # POS Tagging
-        print(f"Lemma: {word.lemma_}") # Lemmatization
-        print(f"Dependency relation: {word.dep_}")  # Dependency Parsing
-        print(f"explain: {spacy.explain(word.dep_)}")
-        print(f"Detailed POS tag: {word.tag_}")
-        print(f"explain: {spacy.explain(word.tag_)}")
-        print(f"morph: {word.morph}")
-        print(f"morph Tense: {word.morph.get('Tense')}")
-        print(f"morph Number: {word.morph.get('Number')}")
-        print(f"morph Person: {word.morph.get('Person')}")
-        print(f"morph Mood: {word.morph.get('Mood')}")
-        print(f"morph VerbForm: {word.morph.get('VerbForm')}")
-        print(f"morph Voice: {word.morph.get('Voice')}")
-        print(f"morph Aspect: {word.morph.get('Aspect')}")
-        print(f"morph Case: {word.morph.get('Case')}")        
-        print(f"Head: {word.head}")
-        print(f"Head dep: {word.head.dep_}")
-        print(word.subtree)
-        print("Subtree:")
-        for subtree in word.subtree:
-            print(subtree)
-        print("\n")
+         if word.dep_ in ('acl','advcl', 'relcl', 'ccomp', 'xcomp', 'csubj', 'cobj'):
+                subclause = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                structure += [subclause]
+    
+    print("structure")
+    print(structure)
+            
+
+
+    for word in sentence:
+        if source != 'fileTransformation':
+            print(f"Text: {word.text}")
+            print(f"Part of Speech: {word.pos_}") # POS Tagging
+            print(f"Lemma: {word.lemma_}") # Lemmatization
+            print(f"Dependency relation: {word.dep_}")  # Dependency Parsing
+            print(f"explain: {spacy.explain(word.dep_)}")
+            print(f"Detailed POS tag: {word.tag_}")
+            print(f"explain: {spacy.explain(word.tag_)}")
+            print(f"morph: {word.morph}")
+            print(f"morph Tense: {word.morph.get('Tense')}")
+            print(f"morph Number: {word.morph.get('Number')}")
+            print(f"morph Person: {word.morph.get('Person')}")
+            print(f"morph Mood: {word.morph.get('Mood')}")
+            print(f"morph VerbForm: {word.morph.get('VerbForm')}")
+            print(f"morph Voice: {word.morph.get('Voice')}")
+            print(f"morph Aspect: {word.morph.get('Aspect')}")
+            print(f"morph Case: {word.morph.get('Case')}")        
+            print(f"Head: {word.head}")
+            print(f"Head dep: {word.head.dep_}")
+            print(word.subtree)
+            print("Subtree:")
+            for subtree in word.subtree:
+                print(subtree)
+            print("\n")
 
 
         if word.dep_ in ('acl','advcl', 'relcl'):
@@ -71,15 +89,22 @@ def analyseSentence(sentence):
                   if not found_sent_start:
                     cltree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     cltree += [cltree_str]
-        if word.dep_ == 'nsubjpass':
+        if word.dep_ in( 'nsubjpass', 'csubjpass'):
+                 
                  if word.head.dep_ == 'ROOT':
                     subtree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
-                    subjpass = subjpass + subtree_str
+                    if word.tag_ == 'WDT':
+                      wsubjpass = subtree_str
+                    else:
+                        subjpass = subjpass + subtree_str
         if word.dep_ == 'nsubj': 
             subj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
             #if word.head.dep_ == 'auxpass': 
             """if word.head.head.dep_ == 'ROOT': 
                     subjpass = subj """
+        if word.dep_ == 'mark':
+            if word.head.dep_ == 'ROOT':
+                mark = word.text
         if word.dep_ in ('advmod','npadvmod','oprd', 'amod'):
             if word.head.dep_ == 'ROOT':
                 if verb == '':
@@ -127,8 +152,9 @@ def analyseSentence(sentence):
         if word.dep_ == 'ROOT':
             verb = word.text
             verbLemma = word.lemma_
-            if sentence[word.i+1].tag_ == 'IN':
-                 verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
+            if len(sentence) > word.i+1:
+                if sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent':
+                    verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
         if word.dep_ == 'prt':
             if word.head.dep_ == 'ROOT':
                 part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -163,31 +189,33 @@ def analyseSentence(sentence):
     
     if aplural:
         aNumber = en.PLURAL
+    if source != 'fileTransformation':
+        print(f"subjpass: {subjpass}")
+        print(f"subj: {subj}")
+        print(f"verb: {verb}")
+        print(f"verbForm: {verbForm}")
+        print(f"verbTense: {verbTense}")
+        print(f"verbPerson: {verbPerson}")
+        print(f"verbMood: {verbMood}")
+        print(f"adverb: {adverb}")
+        print(f"part: {part}")
+        print(f"prep: {prep}")
+        print(f"agent: {agent}")
 
-    print(f"subjpass: {subjpass}")
-    print(f"subj: {subj}")
-    print(f"verb: {verb}")
-    print(f"verbForm: {verbForm}")
-    print(f"verbTense: {verbTense}")
-    print(f"verbPerson: {verbPerson}")
-    print(f"verbMood: {verbMood}")
-    print(f"adverb: {adverb}")
-    print(f"part: {part}")
-    print(f"prep: {prep}")
-    print(f"agent: {agent}")
+        print(f"aplural: {aplural}")
 
-    print(f"aplural: {aplural}")
-
-    print(f"cltree: {cltree}")
-    print(f"aux: {aux}")
-    print(f"xcomp: {xcomp}")
-    print(f"punc: {punc}")
-    print("\n")
+        print(f"cltree: {cltree}")
+        print(f"aux: {aux}")
+        print(f"xcomp: {xcomp}")
+        print(f"punc: {punc}")
+        
+        print("\n")
 
 
 
     results = {
         "subjpass": subjpass,
+        "wsubjpass": wsubjpass,
         "subj": subj,
         "verb": verb,
         "verbLemma": verbLemma,

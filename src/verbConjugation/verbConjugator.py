@@ -59,6 +59,8 @@ def conjugateVerb(data):
                     print(pat.tenses(c.text)[0][0])
                     if pat.tenses(c.text)[0][0] == 'infinitive':
                         finalAux += pat.conjugate('have',tense='present',person=3, number=num) + ' '
+                    else:
+                        finalAux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],person=3, number=num) + ' '
                 else:
                     finalAux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
            elif c.tag_ == 'MD' or c.lemma_ == 'will':
@@ -78,13 +80,17 @@ def conjugateVerb(data):
         if finalAux is not None and verbActive is not None:
             finalVerb['auxilaryVerb'] = finalAux
             finalVerb['activeVerb'] = verbActive
+            print("finalAux")
+            print(finalAux)
+            print("verbActive")
+            print(verbActive)
         else:
             print("One is NONE")
             print("finalAux")
             print(finalAux)
             print("verbActive")
             print(verbActive)
-
+        
         return finalVerb
 
 
