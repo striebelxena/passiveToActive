@@ -1,7 +1,7 @@
 import pattern_patch 
 import pattern.text.en as pat
 import spacy
-nlp = spacy.load("en_core_web_lg")
+nlp = spacy.load("en_core_web_lg", exclude = ['morphologizer','ner'])
 #thirdPerson = pat.conjugate('have',tense='present',person=3, number=pat.SINGULAR) 
 #print(thirdPerson)
 
@@ -12,10 +12,10 @@ def conjugateVerb(data):
         aux = list(data.get('aux'))
         verbAspect = data.get('verbAspect')
         aux_doc = nlp(' '.join(aux))
-        finalVerb = " "
+        finalVerb = {'auxilaryVerb':'', 'activeVerb':''}
        
 
-        final_aux = ''
+        finalAux = ''
         num = pat.SINGULAR if not (data.get('aplural') or data.get('agent') in ('me', 'you', 'i')) else pat.PLURAL
         print("num")
         print(num)
@@ -39,17 +39,17 @@ def conjugateVerb(data):
            if c.lemma_ == 'not':
                 if l.lemma_ == 'be':
                     if n.lemma_ == 'be':
-                        final_aux += pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                        finalAux += pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num) + ' '
                         verbAspect = pat.PROGRESSIVE
                     else:
-                        final_aux += pat.conjugate('do',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                        finalAux += pat.conjugate('do',tense=pat.tenses(l.text)[0][0],number=num) + ' '
                 elif l.lemma_ == 'have':
-                    final_aux += pat.conjugate('have',tense=pat.tenses(l.text)[0][0],number=num) + ' '
-                final_aux += 'not '
+                    finalAux += pat.conjugate('have',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                finalAux += 'not '
            elif c.lemma_ == 'be':
                 if n.lemma_ == 'be':
                     print("progressive")
-                    final_aux += pat.conjugate('be',tense=pat.tenses(c.text)[0][0],number=num) + ' '
+                    finalAux += pat.conjugate('be',tense=pat.tenses(c.text)[0][0],number=num) + ' '
                     verbAspect = pat.PROGRESSIVE
                
            elif c.lemma_ == 'have':
@@ -58,15 +58,15 @@ def conjugateVerb(data):
                     print("third person")
                     print(pat.tenses(c.text)[0][0])
                     if pat.tenses(c.text)[0][0] == 'infinitive':
-                        final_aux += pat.conjugate('have',tense='present',person=3, number=num) + ' '
+                        finalAux += pat.conjugate('have',tense='present',person=3, number=num) + ' '
                 else:
-                    final_aux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
+                    finalAux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
            elif c.tag_ == 'MD' or c.lemma_ == 'will':
                 num = pat.PLURAL
-                final_aux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
+                finalAux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
            else:
-                final_aux += c.text_with_ws
-        final_aux = final_aux.lower().strip()    
+                finalAux += c.text_with_ws
+        finalAux = finalAux.lower().strip()    
 
          # conjugate main verb:
         print("Num: " + str(num))
@@ -75,17 +75,16 @@ def conjugateVerb(data):
         else:
             verbActive = pat.conjugate(verbLemma,tense=tense, number=num)
 
-        if final_aux is not None and verbActive is not None:
-            if final_aux == '':
-                finalVerb =  verbActive
-            else:
-                finalVerb = final_aux + " " + verbActive
+        if finalAux is not None and verbActive is not None:
+            finalVerb['auxilaryVerb'] = finalAux
+            finalVerb['activeVerb'] = verbActive
         else:
             print("One is NONE")
-            print("final_aux")
-            print(final_aux)
+            print("finalAux")
+            print(finalAux)
             print("verbActive")
             print(verbActive)
+
         return finalVerb
 
 

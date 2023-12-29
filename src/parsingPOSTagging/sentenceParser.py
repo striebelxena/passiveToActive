@@ -16,15 +16,20 @@ def analyseSentence(sentence):
     verbAspect = ''
     adverb = {'bef':'', 'aft':''}
     part = ''
-    prep = ''
+    prepAtStart = ''
+    prep = list()
     agent = ''
     agentExists = False
     aplural = False
     aNumber = en.SINGULAR
-    subtree = None
+    cltreeAtStart = ''
+    cltree = list()
     aux = list(list(nlp('. .').sents)[0]) # start with 2 'null' elements
     xcomp = ''
     punc = '.'
+    
+    print("cltree")
+    print(cltree)
 
 
     for word in sentence:
@@ -32,7 +37,9 @@ def analyseSentence(sentence):
         print(f"Part of Speech: {word.pos_}") # POS Tagging
         print(f"Lemma: {word.lemma_}") # Lemmatization
         print(f"Dependency relation: {word.dep_}")  # Dependency Parsing
+        print(f"explain: {spacy.explain(word.dep_)}")
         print(f"Detailed POS tag: {word.tag_}")
+        print(f"explain: {spacy.explain(word.tag_)}")
         print(f"morph: {word.morph}")
         print(f"morph Tense: {word.morph.get('Tense')}")
         print(f"morph Number: {word.morph.get('Number')}")
@@ -51,18 +58,29 @@ def analyseSentence(sentence):
         print("\n")
 
 
-        if word.dep_ in ('acl','advcl'):
+        if word.dep_ in ('acl','advcl', 'relcl'):
+            print("acl found")
+            print(word.text)
+            print(cltree)
             if word.head.dep_ in ('ROOT', 'auxpass'):
-                subtree = word.subtree
+                  for c in  word.children :
+                    if c.is_sent_start:
+                        cltreeAtStart = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                        found_sent_start = True
+                        break
+                  if not found_sent_start:
+                    cltree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    cltree += [cltree_str]
         if word.dep_ == 'nsubjpass':
-            if word.head.dep_ == 'ROOT':
-                subjpass = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                 if word.head.dep_ == 'ROOT':
+                    subtree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    subjpass = subjpass + subtree_str
         if word.dep_ == 'nsubj': 
             subj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
             #if word.head.dep_ == 'auxpass': 
             """if word.head.head.dep_ == 'ROOT': 
                     subjpass = subj """
-        if word.dep_ in ('advmod','npadvmod','oprd'):
+        if word.dep_ in ('advmod','npadvmod','oprd', 'amod'):
             if word.head.dep_ == 'ROOT':
                 if verb == '':
                     adverb['bef'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -88,7 +106,6 @@ def analyseSentence(sentence):
                         verbAspect = en.PROGRESSIVE
             elif word.tag_ == 'VBN':
                         verbTense = en.PAST
-           
             elif word.tag_ == 'VBP' or word.tag_ == 'VBZ':
                 verbTense = en.PRESENT
             elif word.tag_ == 'MD':
@@ -110,13 +127,18 @@ def analyseSentence(sentence):
         if word.dep_ == 'ROOT':
             verb = word.text
             verbLemma = word.lemma_
-           
+            if sentence[word.i+1].tag_ == 'IN':
+                 verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
         if word.dep_ == 'prt':
             if word.head.dep_ == 'ROOT':
                 part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'prep':
             if word.head.dep_ == 'ROOT':
-                prep = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                  if word.is_sent_start:
+                    prepAtStart = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                  else:
+                    prep_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    prep += [prep_str]
         if word.dep_.endswith('obj'):
             if word.head.dep_ == 'agent':
                 if word.head.head.dep_ == 'ROOT':
@@ -156,7 +178,7 @@ def analyseSentence(sentence):
 
     print(f"aplural: {aplural}")
 
-    print(f"subtree: {subtree}")
+    print(f"cltree: {cltree}")
     print(f"aux: {aux}")
     print(f"xcomp: {xcomp}")
     print(f"punc: {punc}")
@@ -176,12 +198,15 @@ def analyseSentence(sentence):
         "verbMood": verbMood,
         "adverb": adverb,
         "part": part,
+        "prepAtStart": prepAtStart, # prepAtStart ist ein String, der das Präpositionalobjekt am Satzanfang enthält
         "prep": prep,
         "agent": agent,
         "aplural": aplural,
         "aNumber": aNumber,
-        "subtree":  subtree,  # Konvertieren Sie subtree in eine Liste von Strings, falls nicht None
+        "cltreeAtStart": cltreeAtStart, # cltreeAtStart ist ein String, der das Präpositionalobjekt am Satzanfang enthält
+        "cltree":  cltree,  # Konvertieren Sie subtree in eine Liste von Strings, falls nicht None
         "aux": [a.text for a in aux],  # Konvertieren Sie aux in eine Liste von Texten der Wörter
+        "verbAddition": verbAddition,
         "xcomp": xcomp,
         "punc": punc
         }
