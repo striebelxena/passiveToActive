@@ -2,6 +2,8 @@ import spacy
 import pattern.text.en as en
 
 nlp = spacy.load("en_core_web_lg")
+from spacy.tokens import Token
+
 
 
 def analyseSentence(sentence, source):
@@ -15,7 +17,7 @@ def analyseSentence(sentence, source):
     verbMood = ''
     verbAspect = ''
     verbAddition = ''
-    adverb = {'bef':'', 'aft':''}
+    adverb = {'start':'','bef':'', 'aft':''}
     part = ''
     prepAtStart = ''
     prep = list()
@@ -27,27 +29,47 @@ def analyseSentence(sentence, source):
     cltreeAtStart = ''
     cltree = list()
     aux = list(list(nlp('. .').sents)[0]) # start with 2 'null' elements
+    cconj = ''
     xcomp = ''
+    conj = ''
+    ccomp = ''
     punc = '.'
     wsubjpass = ''
     found_sent_start = False
     subclause = ''
-    structure = list()
+    structure = {}
     
     print("cltree")
     print(cltree)
 
 
-    # General analysis of sentence structure
+  
+
+    # Add custom extension to Token class to save the position of the token in the sentence
+    if not Token.has_extension("sentPosition"):
+        Token.set_extension("sentPosition", default= 1)
+
+        for token in sentence:
+            token._.sentPosition = token.i
+
+        for token in sentence:
+            print(f"token: {token.text}, sentPosition: {token._.sentPosition}")
+
+    # General analysis of sentence structure 
+
     for word in sentence:
-         if word.dep_ in ('acl','advcl', 'relcl', 'ccomp', 'xcomp', 'csubj', 'cobj'):
+         if word.dep_ in ('acl','advcl', 'relcl', 'ccomp', 'xcomp', 'csubj', 'cobj', 'conj', 'cc', 'auxpass', 'subjpass', 'nsubjpass', 'dobj', 'iobj', 'agent', 'pcomp', 'acomp', 'appos', ):
                 subclause = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
-                structure += [subclause]
+                structure[f"{word.dep_} {word._.sentPosition} " ] = subclause
     
     print("structure")
     print(structure)
-            
+    #pattern = structur
 
+    print("chunks")
+            
+    for chunk in sentence.noun_chunks:
+        print(chunk.text)
 
     for word in sentence:
         if source != 'fileTransformation':
@@ -75,7 +97,7 @@ def analyseSentence(sentence, source):
                 print(subtree)
             print("\n")
 
-
+             
         if word.dep_ in ('acl','advcl', 'relcl'):
             print("acl found")
             print(word.text)
@@ -90,7 +112,6 @@ def analyseSentence(sentence, source):
                     cltree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     cltree += [cltree_str]
         if word.dep_ in( 'nsubjpass', 'csubjpass'):
-                 
                  if word.head.dep_ == 'ROOT':
                     subtree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     if word.tag_ == 'WDT':
@@ -107,7 +128,9 @@ def analyseSentence(sentence, source):
                 mark = word.text
         if word.dep_ in ('advmod','npadvmod','oprd', 'amod'):
             if word.head.dep_ == 'ROOT':
-                if verb == '':
+                if word.is_sent_start:
+                    adverb['start'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                elif verb == '':
                     adverb['bef'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 else:
                     adverb['aft'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -172,9 +195,10 @@ def analyseSentence(sentence, source):
                     aplural = word.tag_ in ('NNS','NNPS')
         if word.dep_ == "agent":
             agentExists = True
-        if word.dep_ in ('xcomp','ccomp','conj'):
+        if word.dep_ == 'cc':
+            cconj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree)
+        if word.dep_ in ('xcomp'):
             if word.head.dep_ == 'ROOT':
-                print("recursion should be triggered")
                 xcomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 """Sthat = xcomp.startswith('that')
                 xcomp = pass2act(xcomp, True).strip(' .')
@@ -183,6 +207,12 @@ def analyseSentence(sentence, source):
         if word.dep_ == 'punct' and not rec:
             if word.text != '"':
                 punc = word.text"""
+        if word.dep_ in ('xcomp'):
+            if word.head.dep_ == 'ROOT':
+                ccomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+        if word.dep_ in ('conj'):
+            if word.head.dep_ == 'ROOT':
+                conj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
     if not agentExists: # if no agent is found:
         agent = "one"
         aplural = False
@@ -235,7 +265,10 @@ def analyseSentence(sentence, source):
         "cltree":  cltree,  # Konvertieren Sie subtree in eine Liste von Strings, falls nicht None
         "aux": [a.text for a in aux],  # Konvertieren Sie aux in eine Liste von Texten der Wörter
         "verbAddition": verbAddition,
+        "cconj": cconj,
         "xcomp": xcomp,
+        "conj" : conj,
+        "ccomp": ccomp,
         "punc": punc
         }
 

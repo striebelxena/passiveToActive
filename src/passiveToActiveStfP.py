@@ -1,3 +1,7 @@
+import os
+from nltk.parse.stanford import StanfordParser
+
+
 import spacy
 import pattern_patch 
 import checkForPassive.passiveCheck as passiveCheck
@@ -5,6 +9,24 @@ import parsingPOSTagging.sentenceParser as analyseSentence
 import verbConjugation.verbConjugator as verbConjugator
 import transformation.transformer as transformer
 
+
+
+
+# Pfad zum Stanford Parser
+stanford_parser_dir = 'C:\\Users\\xstri\\OneDrive\\Master\\SemesterZwei\\NLPPraktikum\\PassiveToActiveWithNLP\\stanford-parser-full-2020-11-17'
+
+os.environ['STANFORD_PARSER'] = stanford_parser_dir
+os.environ['STANFORD_MODELS'] = stanford_parser_dir + 'models'
+
+
+parser = StanfordParser(model_path="C:\\Users\\xstri\\OneDrive\\Master\\SemesterZwei\\NLPPraktikum\\PassiveToActiveWithNLP\\stanford-corenlp-4.2.0.models-english.jar")
+sentences = parser.raw_parse_sents(("Hello, this is a test.", "How are you?"))
+for line in sentences:
+    for sentence in line:
+        sentence.draw()
+
+
+"""
 # Load NLP model
 nlp = spacy.load("en_core_web_lg")
 
@@ -32,3 +54,4 @@ def passiveToActive(sentence, source):
     print('\n')
 
     return transformedSentence
+    """
