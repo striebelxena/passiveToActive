@@ -11,7 +11,13 @@ run:
 
 ```python
 pip install spacy
-pip install Pattern3
+python -m spacy download en_core_web_lg
+pip install stanza 
+pip install pattern
+pip install pandas
+
+(pip install Pattern3)
+
 
 
 ```

@@ -13,7 +13,7 @@ source = 'fileTransformation'
 
 # Pfade relativ zum Basisverzeichnis bilden
 input_file = parent_dir / 'data' / 'Goldstandard_XenaStriebel_V2.xlsx'
-output_file = parent_dir / 'data' / 'Evaluation2.xlsx'
+output_file = parent_dir / 'data' / 'Evaluation3.xlsx'
 
 # Laden der Excel-Datei
 df = pd.read_excel(input_file)

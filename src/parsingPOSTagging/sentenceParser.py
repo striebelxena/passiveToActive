@@ -17,6 +17,7 @@ def analyseSentence(sentence, source):
     verbMood = ''
     verbAspect = ''
     verbAddition = ''
+    verbForm = ''
     adverb = {'start':'','bef':'', 'aft':''}
     part = ''
     prepAtStart = ''
@@ -38,6 +39,7 @@ def analyseSentence(sentence, source):
     found_sent_start = False
     subclause = ''
     structure = {}
+    passiveSentences = list()
     
     print("cltree")
     print(cltree)
@@ -61,6 +63,15 @@ def analyseSentence(sentence, source):
          if word.dep_ in ('acl','advcl', 'relcl', 'ccomp', 'xcomp', 'csubj', 'cobj', 'conj', 'cc', 'auxpass', 'subjpass', 'nsubjpass', 'dobj', 'iobj', 'agent', 'pcomp', 'acomp', 'appos', ):
                 subclause = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 structure[f"{word.dep_} {word._.sentPosition} " ] = subclause
+                sub_clause = nlp(subclause)
+                has_auxpass = any(word.dep_ == "auxpass" for word in sub_clause)
+                has_nsubjpass = any(word.dep_ == "nsubjpass" for word in sub_clause)
+
+                if has_auxpass and has_nsubjpass:
+                    passiveSentences.append(subclause)  
+
+    print("passiveSentences")
+    print(passiveSentences) 
     
     print("structure")
     print(structure)
@@ -112,7 +123,7 @@ def analyseSentence(sentence, source):
                     cltree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     cltree += [cltree_str]
         if word.dep_ in( 'nsubjpass', 'csubjpass'):
-                 if word.head.dep_ == 'ROOT':
+                 #if word.head.dep_ == 'ROOT':
                     subtree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     if word.tag_ == 'WDT':
                       wsubjpass = subtree_str
@@ -170,7 +181,7 @@ def analyseSentence(sentence, source):
                     subjpass = subj"""
 
         if word.dep_ in ('aux','auxpass','neg'):
-            if word.head.dep_ == 'ROOT':
+            if word.head.dep_ in ('ROOT', 'relcl', 'advcl', 'xcomp', 'ccomp'):
                 aux += [word]
         if word.dep_ == 'ROOT':
             verb = word.text
@@ -190,7 +201,8 @@ def analyseSentence(sentence, source):
                     prep += [prep_str]
         if word.dep_.endswith('obj'):
             if word.head.dep_ == 'agent':
-                if word.head.head.dep_ == 'ROOT':
+                #if word.head.head.dep_ == 'ROOT':
+                if word.head.head.dep_ in ('ROOT', 'relcl', 'advcl', 'xcomp', 'ccomp'):
                     agent = ''.join(w.text + ', ' if w.dep_=='appos' else (w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws) for w in word.subtree).strip()
                     aplural = word.tag_ in ('NNS','NNPS')
         if word.dep_ == "agent":
@@ -269,6 +281,7 @@ def analyseSentence(sentence, source):
         "xcomp": xcomp,
         "conj" : conj,
         "ccomp": ccomp,
+        "mark": mark,
         "punc": punc
         }
 

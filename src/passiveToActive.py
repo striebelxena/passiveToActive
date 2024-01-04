@@ -17,15 +17,17 @@ def passiveToActive(sentence, source):
  
 
     # check if the sentence is passive
-    isPassive = passiveCheck.checkForPassive(doc)
-    if (isPassive != True):
+    identifiedPassiveSentence, preClause, postClause = passiveCheck.checkForPassive(doc)
+    identifiedPassiveSentence = str(identifiedPassiveSentence)
+    if (identifiedPassiveSentence == False):
         print("Sentence is not passive")
         exit()
     else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
-        analysis_results = analyseSentence.analyseSentence(doc, source)
+        passiveSentence = nlp(identifiedPassiveSentence)
+        analysis_results = analyseSentence.analyseSentence(passiveSentence, source)
         print(f"results: {analysis_results}")
         verbActive = verbConjugator.conjugateVerb(analysis_results)
-        transformedSentence = transformer.transformSentence(analysis_results, verbActive)
+        transformedSentence = transformer.transformSentence(analysis_results, verbActive, preClause, postClause)
 
     print(f"Passive Sentence: {doc}")
     print(f"Active Sentence: {transformedSentence}")

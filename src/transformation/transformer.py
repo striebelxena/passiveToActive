@@ -2,7 +2,7 @@ import transformation.nounInversion as ni
 
 
 
-def transformSentence(data, finalVerb):
+def transformSentence(data, finalVerb, preClause, postClause):
  
     verb = finalVerb['activeVerb']
     auxilary = finalVerb['auxilaryVerb']
@@ -23,20 +23,26 @@ def transformSentence(data, finalVerb):
     conj = data.get('conj')
     part = data.get('part')
     verbAddition = data.get('verbAddition')
-    
+    wsubj = data.get('wsubjpass')
+    mark = data.get('mark')
+    punc = data.get('punc')
+    preClause = str(preClause)
+    postClause = str(postClause)    
+    finalClause = ""
 
     if agent != 'one':
           agent = ni.inversion(agent)
 
     
     subject = agent
-    object =subjpass
+    
+    object = subjpass
     
 
     # Basic conversion (not considering verb tense adjustmen7ts)
    
-    #active_sentence = f"{subject} {adverbBefore} {verb} {object} {adverbAfter} {cltree} {prep} {xcomp}" + "."
-    #active_sentence = active_sentence[0].upper() + active_sentence[1:]
+    #activeClause = f"{subject} {adverbBefore} {verb} {object} {adverbAfter} {cltree} {prep} {xcomp}" + "."
+    #activeClause = activeClause[0].upper() + activeClause[1:]
 
     """newsent = ' '.join(list(filter(None, [agent,auxstr,adverb['bef'],verb,part,subjpass,adverb['aft'],advcl,prep,xcomp])))+punc
     if not rec:
@@ -46,7 +52,14 @@ def transformSentence(data, finalVerb):
     #components = [prepAtStart, cltreeAtStart, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp]
     # Entfernen Sie alle leeren Strings aus der Liste
 
-    components = [adverbStart, prepAtStart, cltreeAtStart, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    print("preClause")
+    print(preClause)
+    print("postClause")
+    print(postClause)
+
+    components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    print("initial components:")
+    print(components)
     components = [comp for comp in components if comp]
     
     def remove_duplicates_and_substrings():
@@ -57,10 +70,10 @@ def transformSentence(data, finalVerb):
                 components[i] = ''
                 break
 
-    remove_duplicates_and_substrings()
+    #remove_duplicates_and_substrings()
    
-    print("components:")
-    print(components)
+    #print("unique components:")
+    #print(components)
 
     filtered_components = [comp for comp in components if comp]
     """sorted_components = sorted(filtered_components, key=lambda x: len(x) if x else 0, reverse=True)
@@ -79,9 +92,22 @@ def transformSentence(data, finalVerb):
     print(final_components)
     
     # Verbinden Sie die Komponenten mit einem Leerzeichen
-    active_sentence = " ".join(final_components) + "."
-    active_sentence = active_sentence[0].upper() + active_sentence[1:]
+    activeClause =  " ".join(final_components) + punc
+    if preClause:
+      finalClause = preClause + " " + activeClause
+    if postClause:
+      if postClause == '.':
+         finalClause = activeClause + postClause 
+      else:
+       finalClause = finalClause + " " + postClause
+    
+    if finalClause !="":
+       finalClause = finalClause[0].upper() + finalClause[1:]
+    else:
+       finalClause = activeClause[0].upper() + activeClause[1:] 
 
-    print(active_sentence)
 
-    return active_sentence
+    print(finalClause)
+
+
+    return finalClause
