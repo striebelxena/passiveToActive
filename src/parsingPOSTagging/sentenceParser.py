@@ -22,7 +22,7 @@ def analyseSentence(sentence, source):
     part = ''
     prepAtStart = ''
     prep = list()
-    mark = ''
+    mark = list()
     agent = ''
     agentExists = False
     aplural = False
@@ -34,7 +34,7 @@ def analyseSentence(sentence, source):
     xcomp = ''
     conj = ''
     ccomp = ''
-    punc = '.'
+    punc = ''
     wsubjpass = ''
     found_sent_start = False
     subclause = ''
@@ -110,18 +110,52 @@ def analyseSentence(sentence, source):
 
              
         if word.dep_ in ('acl','advcl', 'relcl'):
-            print("acl found")
-            print(word.text)
-            print(cltree)
+            print("acl")
+            print(word)
             if word.head.dep_ in ('ROOT', 'auxpass'):
-                  for c in  word.children :
+                cltree_span = list(word.subtree)
+                print("cltree_span")
+                print(cltree_span)
+
+                start_index = cltree_span[0].i
+                print("start_index")
+                print(start_index)
+            
+                end_index = cltree_span[-1].i
+                print("end_index")
+                print(end_index)
+
+                max_index = len(sentence)-1
+                print("max_index")
+                print(max_index)
+                
+                if end_index + 1 < max_index and sentence[end_index + 1].dep_ == 'punct':
+                        cltree_str = sentence[start_index:end_index+2].text
+                        cltree += [cltree_str]
+                else:
+                        cltree_str = sentence[start_index:end_index+1].text
+                        cltree += [cltree_str]
+
+                print("cltree")
+                print(cltree)
+                
+                atStart = any(word.is_sent_start for word in cltree_span)
+                if atStart:
+                  cltreeAtStart = cltree
+                  cltree = []
+                
+               
+                """cltree = str(cltree)
+                print("string cltree")
+                print(cltree)"""
+                """for c in  word.children :
                     if c.is_sent_start:
                         cltreeAtStart = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                         found_sent_start = True
                         break
                   if not found_sent_start:
                     cltree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
-                    cltree += [cltree_str]
+                    cltree += [cltree_str]"""
         if word.dep_ in( 'nsubjpass', 'csubjpass'):
                  #if word.head.dep_ == 'ROOT':
                     subtree_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -136,7 +170,8 @@ def analyseSentence(sentence, source):
                     subjpass = subj """
         if word.dep_ == 'mark':
             if word.head.dep_ == 'ROOT':
-                mark = word.text
+                mark_str = word.text
+                mark += [mark_str]
         if word.dep_ in ('advmod','npadvmod','oprd', 'amod'):
             if word.head.dep_ == 'ROOT':
                 if word.is_sent_start:
@@ -182,7 +217,11 @@ def analyseSentence(sentence, source):
 
         if word.dep_ in ('aux','auxpass','neg'):
             if word.head.dep_ in ('ROOT', 'relcl', 'advcl', 'xcomp', 'ccomp'):
-                aux += [word]
+                if word.dep_ == ('auxpass'):
+                    aux += [word]
+                else:                     
+                     if(sentence[word.i+1].dep_ == 'auxpass') or (sentence[word.i+2].dep_ == 'auxpass'):
+                          aux += [word]
         if word.dep_ == 'ROOT':
             verb = word.text
             verbLemma = word.lemma_
@@ -193,12 +232,44 @@ def analyseSentence(sentence, source):
             if word.head.dep_ == 'ROOT':
                 part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'prep':
-            if word.head.dep_ == 'ROOT':
-                  if word.is_sent_start:
+            #if word.head.dep_ in ('ROOT', 'auxpass'):
+                prep_span = list(word.subtree)
+                print("prep_span")
+                print(prep_span)
+
+                start_index = prep_span[0].i
+                print("start_index")
+                print(start_index)
+            
+                end_index = prep_span[-1].i
+                print("end_index")
+                print(end_index)
+
+                max_index = len(sentence)-1
+                print("max_index")
+                print(max_index)
+                
+                if end_index + 1 < max_index and sentence[end_index + 1].dep_ == 'punct':
+                        prep = sentence[start_index:end_index+2].text
+                        #prep += [prep_str]
+                else:
+                        prep = sentence[start_index:end_index+1].text
+                        #prep += [prep_str]
+
+                print("prep")
+                print(prep)
+                
+                atStart = any(word.is_sent_start for word in prep_span)
+                if atStart:
+                  prepAtStart = prep
+                  prep = []
+                
+                  """if word.is_sent_start:
                     prepAtStart = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                   else:
                     prep_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
-                    prep += [prep_str]
+                    prep += [prep_str]"""
+            
         if word.dep_.endswith('obj'):
             if word.head.dep_ == 'agent':
                 #if word.head.head.dep_ == 'ROOT':
@@ -215,11 +286,11 @@ def analyseSentence(sentence, source):
                 """Sthat = xcomp.startswith('that')
                 xcomp = pass2act(xcomp, True).strip(' .')
                 if not xcomp.startswith('that') and that:
-                    xcomp = 'that '+xcomp
-        if word.dep_ == 'punct' and not rec:
+                    xcomp = 'that '+xcomp"""
+        if word.dep_ == 'punct':
             if word.text != '"':
-                punc = word.text"""
-        if word.dep_ in ('xcomp'):
+                punc = word.text
+        if word.dep_ in ('ccomp'):
             if word.head.dep_ == 'ROOT':
                 ccomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ in ('conj'):
@@ -233,6 +304,7 @@ def analyseSentence(sentence, source):
         aNumber = en.PLURAL
     if source != 'fileTransformation':
         print(f"subjpass: {subjpass}")
+        print(f"subjpass-index: {wsubjpass}") #index???
         print(f"subj: {subj}")
         print(f"verb: {verb}")
         print(f"verbForm: {verbForm}")

@@ -12,11 +12,14 @@ def transformSentence(data, finalVerb, preClause, postClause):
     adverbBefore = data.get('adverb')['bef']
     adverbAfter= data.get('adverb')['aft']
     cltreeAtStart = data.get('cltreeAtStart')
+    cltreeAtStart = ' '.join(cltreeAtStart)
     cltree = data.get('cltree')
     cltree = ' '.join(cltree)
+    #cltree = str(cltree)
     prepAtStart = data.get('prepAtStart')
+    #prepAtStart = ' '.join(prepAtStart)
     prep = data.get('prep')
-    prep = ' '.join(prep)
+    #prep = ' '.join(prep)
     xcomp = data.get('xcomp')
     cconj = data.get('cconj')
     ccomp = data.get('ccomp')
@@ -25,6 +28,8 @@ def transformSentence(data, finalVerb, preClause, postClause):
     verbAddition = data.get('verbAddition')
     wsubj = data.get('wsubjpass')
     mark = data.get('mark')
+    mark = ' '.join(mark)
+    #mark = str(mark)
     punc = data.get('punc')
     preClause = str(preClause)
     postClause = str(postClause)    
@@ -57,11 +62,12 @@ def transformSentence(data, finalVerb, preClause, postClause):
     print("postClause")
     print(postClause)
 
-    components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    #components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    
+    components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, ccomp, conj]
     print("initial components:")
     print(components)
     components = [comp for comp in components if comp]
-    
     def remove_duplicates_and_substrings():
      for i, comp in enumerate(components):
       if comp:
@@ -70,10 +76,10 @@ def transformSentence(data, finalVerb, preClause, postClause):
                 components[i] = ''
                 break
 
-    #remove_duplicates_and_substrings()
+    remove_duplicates_and_substrings()
    
-    #print("unique components:")
-    #print(components)
+    print("unique components:")
+    print(components)
 
     filtered_components = [comp for comp in components if comp]
     """sorted_components = sorted(filtered_components, key=lambda x: len(x) if x else 0, reverse=True)
@@ -91,23 +97,18 @@ def transformSentence(data, finalVerb, preClause, postClause):
     print("final components:")
     print(final_components)
     
-    # Verbinden Sie die Komponenten mit einem Leerzeichen
-    activeClause =  " ".join(final_components) + punc
-    if preClause:
-      finalClause = preClause + " " + activeClause
-    if postClause:
+    finalClause =  " ".join(final_components) + punc
+    if preClause and preClause != 'false':
+      finalClause = preClause + " " + finalClause
+    if postClause and postClause != 'false':
       if postClause == '.':
-         finalClause = activeClause + postClause 
+        finalClause = finalClause + postClause 
       else:
-       finalClause = finalClause + " " + postClause
+          finalClause = finalClause + " " + postClause
     
-    if finalClause !="":
-       finalClause = finalClause[0].upper() + finalClause[1:]
-    else:
-       finalClause = activeClause[0].upper() + activeClause[1:] 
-
-
+    
+    finalClause = finalClause[0].upper() + finalClause[1:]
+   
     print(finalClause)
-
 
     return finalClause
