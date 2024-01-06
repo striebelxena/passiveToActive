@@ -2,6 +2,8 @@ import spacy
 import pattern_patch 
 import checkForPassive.passiveCheck as passiveCheck
 import parsingPOSTagging.sentenceParser as analyseSentence
+import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
+
 import verbConjugation.verbConjugator as verbConjugator
 import transformation.transformer as transformer
 
@@ -24,7 +26,7 @@ def passiveToActive(sentence, source):
         exit()
     else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
         passiveSentence = nlp(identifiedPassiveSentence)
-        analysis_results = analyseSentence.analyseSentence(passiveSentence, source)
+        analysis_results = analyseSentenceTest.analyseSentence(passiveSentence, source)
         print(f"results: {analysis_results}")
         verbActive = verbConjugator.conjugateVerb(analysis_results)
         transformedSentence = transformer.transformSentence(analysis_results, verbActive, preClause, postClause)

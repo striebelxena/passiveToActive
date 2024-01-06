@@ -1,5 +1,7 @@
 import stanza
 import logging
+from collections import deque
+from graphviz import Digraph
 
 # Deaktivating of the Stanza-logs otherwise too much unnecessary output is generated
 logging.getLogger('stanza').setLevel(logging.WARNING) 
@@ -8,7 +10,7 @@ logging.getLogger('stanza').setLevel(logging.WARNING)
 
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma, depparse,constituency', download_method=None)
-doc = nlp('A configurable device is a device that consists of several components which can be assembled by the manufacturer in multiple configurations.')
+doc = nlp('When time is of the essence, it may also be issued by a single judge.')
 
 tree = doc.sentences[0].constituency
 print("tree")
@@ -17,7 +19,36 @@ print("pretty print")
 print(tree.pretty_print())
 print("children")
 print(tree.children[0].children[1])
-print(tree.children[0].children[1].children[1])
+#print(tree.children[0].children[1].children[1])
+def walk_tree(node):
+    print(node.label)
+    for child in node.children:
+        walk_tree(child)
+
+# Angenommen, 'tree' ist Ihr Syntaxbaum
+walk_tree(tree)
+
+print("get_level_2_subtrees")
+def get_level_2_subtrees(root):
+    queue = deque([root])
+    level = 0
+    level_2_subtrees = []
+
+    while queue and level < 3:
+        level_size = len(queue)
+        for i in range(level_size):
+            node = queue.popleft()
+            if level == 2:  # Wir sind auf der zweiten Ebene (level 1, da wir bei 0 beginnen)
+                level_2_subtrees.append(node)
+            queue.extend(node.children)
+        level += 1
+
+    return level_2_subtrees
+
+# Angenommen, 'tree' ist Ihr Syntaxbaum
+level_2_subtrees = get_level_2_subtrees(tree)
+for subtree in level_2_subtrees:
+    print(subtree.label) 
 
 print("SBAR")
 """for token in doc.sentences[0]:
@@ -27,9 +58,9 @@ print("SBAR")
 for sent in doc.sentences:
     for word in sent.words:
         #if(word.deprel == ''):
-        print(word.text, word.head, word.deprel, word.parent.text)
+        print(word.text, word.head, word.head, word.deprel, word.parent)
 
-print(*[f'id: {word.id}\tword: {word.text}\thead id: {word.head}\thead: {sent.words[word.head-1].text if word.head > 0 else "root"}\tdeprel: {word.deprel}' for sent in doc.sentences for word in sent.words], sep='\n')
+print(*[f'id: {word.id}\tword: {word.text} \thead id: {word.head}\thead: {sent.words[word.head-1].text if word.head > 0 else "root"}\tdeprel: {word.deprel}' for sent in doc.sentences for word in sent.words], sep='\n')
 if(tree.children[0].children[1] == 'SBAR'):
     print("SBAR")
 
@@ -77,3 +108,4 @@ for sent in doc.sentences:
         print("sbar_subtree")
         print(sbar_subtree)
         break
+

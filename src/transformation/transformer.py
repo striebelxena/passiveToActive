@@ -12,14 +12,20 @@ def transformSentence(data, finalVerb, preClause, postClause):
     adverbBefore = data.get('adverb')['bef']
     adverbAfter= data.get('adverb')['aft']
     cltreeAtStart = data.get('cltreeAtStart')
-    cltreeAtStart = ' '.join(cltreeAtStart)
+    print("cltreeatStart")
+    print(cltreeAtStart)
+    print(len(cltreeAtStart))
     cltree = data.get('cltree')
+    print("cltree")
+    print(cltree)
+    print(len(cltree))
+    #if len(cltree) > 1:
     cltree = ' '.join(cltree)
     #cltree = str(cltree)
     prepAtStart = data.get('prepAtStart')
     #prepAtStart = ' '.join(prepAtStart)
     prep = data.get('prep')
-    #prep = ' '.join(prep)
+    prep = ' '.join(prep)
     xcomp = data.get('xcomp')
     cconj = data.get('cconj')
     ccomp = data.get('ccomp')
@@ -76,7 +82,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
                 components[i] = ''
                 break
 
-    remove_duplicates_and_substrings()
+    #remove_duplicates_and_substrings()
    
     print("unique components:")
     print(components)
