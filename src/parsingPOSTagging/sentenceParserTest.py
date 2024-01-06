@@ -133,6 +133,8 @@ def analyseSentence(sentence, source):
      if(word.head.i not in headIds):
         headIds.append(word.head.i)
      if word.i not in usedIndex:
+        print("/n")
+
         if source != 'fileTransformation':
             print(f"Text: {word.text}")
             print(f"Part of Speech: {word.pos_}") # POS Tagging
@@ -230,7 +232,7 @@ def analyseSentence(sentence, source):
                     if word.tag_ == 'WDT':
                       wsubjpass = subtree
                     else:
-                        subjpass = subjpass + subtree
+                        subjpass = subjpass + ' ' + subtree
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)
             subj = subj + subtree
