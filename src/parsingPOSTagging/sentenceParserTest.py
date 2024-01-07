@@ -71,7 +71,7 @@ def analyseSentence(sentence, source):
         else:
                     subtree = sentence[start_index:end_index+1].text
 
-        
+        subtree = subtree.strip()
         if start_index == 0:
         # Erster Buchstabe klein
             subtree = subtree[0].lower() + subtree[1:]
@@ -231,8 +231,10 @@ def analyseSentence(sentence, source):
                     subtree, atStart, startIndex = get_subtree(word.i)
                     if word.tag_ == 'WDT':
                       wsubjpass = subtree
-                    else:
-                        subjpass = subjpass + ' ' + subtree
+                    if subjpass == '':
+                        subjpass = subtree
+                    #else:
+                     #S   subjpass = subjpass + ' ' + subtree
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)
             subj = subj + subtree
@@ -300,7 +302,7 @@ def analyseSentence(sentence, source):
                     add_index(word.i)
                     aux += [word]
                 else:                     
-                     if(sentence[word.i+1].dep_ == 'auxpass') or (sentence[word.i+2].dep_ == 'auxpass'):
+                     if(sentence[word.i-1].dep_ == 'auxpass') or (sentence[word.i+1].dep_ == 'auxpass') or (sentence[word.i+2].dep_ == 'auxpass'):
                         add_index(word.i)
                         aux += [word]
         if word.dep_ == 'ROOT':
@@ -308,8 +310,15 @@ def analyseSentence(sentence, source):
             add_index(word.i)
             verbLemma = word.lemma_
             if len(sentence) > word.i+1:
-                if sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent':
+                if (sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent'):
                     subtree, atStart, startIndex = get_subtree(word.i+1)
+                    verbAddition = subtree
+                elif sentence[word.i+1].dep_ == 'oprd':
+                    subtree, atStart, startIndex = get_subtree(word.i+1)
+                    verbAddition = subtree
+                elif sentence[word.i+1].head.dep_ == 'oprd':
+                    head_index= sentence[word.i+1].head.i
+                    subtree, atStart, startIndex = get_subtree(head_index)
                     verbAddition = subtree
 
                     #verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()

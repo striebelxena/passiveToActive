@@ -15,7 +15,7 @@ def conjugateVerb(data):
         finalVerb = {'auxilaryVerb':'', 'activeVerb':''}
        
 
-        finalAux = ''
+        finalAux = []
         num = pat.SINGULAR if not (data.get('aplural') or data.get('agent') in ('me', 'you', 'i')) else pat.PLURAL
         print("num")
         print(num)
@@ -36,18 +36,20 @@ def conjugateVerb(data):
            if c.lemma_ == '.':
                 continue
 
-           if c.lemma_ == 'not':
+           if c.lemma_ == 'not' or n.lemma_ == 'not':
                 if l.lemma_ == 'be':
-                    if n.lemma_ == 'be':
+                    if n.text == 'being':
                         finalAux += pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num) + ' '
                         verbAspect = pat.PROGRESSIVE
                     else:
                         finalAux += pat.conjugate('do',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                        
                 elif l.lemma_ == 'have':
                     finalAux += pat.conjugate('have',tense=pat.tenses(l.text)[0][0],number=num) + ' '
-                finalAux += 'not '
+                finalAux.append('not')
+                
            elif c.lemma_ == 'be':
-                if n.lemma_ == 'be':
+                if n.text == 'being':
                     print("progressive")
                     finalAux += pat.conjugate('be',tense=pat.tenses(c.text)[0][0],number=num) + ' '
                     verbAspect = pat.PROGRESSIVE
@@ -68,8 +70,20 @@ def conjugateVerb(data):
                 finalAux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
            else:
                 finalAux += c.text_with_ws
-        finalAux = finalAux.lower().strip()    
-
+        
+        for index, element in enumerate(finalAux):
+            if element in ('should', 'would', 'could', 'have', 'shall', 'will', 'may', 'might', 'must'):
+                break
+            elif element == "not" and num == pat.SINGULAR:
+                finalAux[index] = "does not"
+                num = pat.PLURAL
+            elif element == "not" and num == pat.PLURAL:
+                finalAux[index]= "do not"
+            
+        finalAux = ''.join(finalAux)
+        finalAux.lower().strip()
+        print("finalAux")
+        print(finalAux)
          # conjugate main verb:
         print("Num: " + str(num))
         if verbAspect:

@@ -1,10 +1,9 @@
 import spacy
 
 def checkForPassive(sentence):
-    preClause = list()
-    postClause = list()
-    passiveClause = []
-    indicesOfSubtrees = []
+    
+
+
     for word in sentence:
       print(word) 
       print(word.dep_)
@@ -30,23 +29,18 @@ def checkForPassive(sentence):
          auxpass_tokens = [w for w in sentence if w.dep_ == 'auxpass']
          print("auxpass_tokens")
          print(auxpass_tokens)
-
          if auxpass_tokens:
-              for token in auxpass_tokens:
-                subtree_span = list(token.head.subtree)
+                subtree_span = list(auxpass_tokens[0].head.subtree)
                 print("subtree_span")
                 print(subtree_span)
                 start_index = subtree_span[0].i
                 end_index = subtree_span[-1].i
-                passiveClause.append(sentence[start_index:end_index+1])
-                #passiveClause.append(sentence[start_index:end_index+1])
-                preClause.append(sentence[:start_index])
-                postClause.append(sentence[end_index+1:])
-                indicesOfSubtrees.append(f'{start_index},{end_index} ')  
-                print("iteration:", token)
+                passiveClause = sentence[start_index:end_index+1]
+                preClause = sentence[:start_index]
+                postClause = sentence[end_index+1:]
                 print("Passive Clause:", passiveClause)
                 print("Start Index:", start_index, "End Index:", end_index)
                 print("Pre Clause:", preClause)
                 print("Post Clause:", postClause)
-              return passiveClause, preClause, postClause, indicesOfSubtrees
-    return False, False, False, False
+                return passiveClause, preClause, postClause
+    return False, False, False

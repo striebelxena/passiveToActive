@@ -4,8 +4,8 @@ import transformation.nounInversion as ni
 
 def transformSentence(data, finalVerb, preClause, postClause):
  
-    verb = finalVerb['activeVerb']
-    auxilary = finalVerb['auxilaryVerb']
+    verb = finalVerb['activeVerb'].strip()
+    auxilary = finalVerb['auxilaryVerb'].strip()
     agent = data.get('agent')
     subjpass = ni.inversion(data.get('subjpass'))
     adverbStart = data.get('adverb')['start']
@@ -69,6 +69,8 @@ def transformSentence(data, finalVerb, preClause, postClause):
     print(postClause)
 
     #components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    
+
     
     components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, ccomp, conj]
     print("initial components:")
