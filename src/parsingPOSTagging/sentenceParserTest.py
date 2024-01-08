@@ -72,8 +72,7 @@ def analyseSentence(sentence, source):
                     subtree = sentence[start_index:end_index+1].text
 
         subtree = subtree.strip()
-        if start_index == 0:
-        # Erster Buchstabe klein
+        if start_index == 0 and sentence[start_index].ent_type_ not in ('PERSON', 'ORG', 'GPE', 'LOC', 'LANGUAGE', 'NORP', 'FAC', 'LAW', 'DATE', 'TIME'):
             subtree = subtree[0].lower() + subtree[1:]
 
         print(f"subtree: {sentence[index].text}")
@@ -154,10 +153,11 @@ def analyseSentence(sentence, source):
             print(f"morph Case: {word.morph.get('Case')}")        
             print(f"Head: {word.head}")
             print(f"Head dep: {word.head.dep_}")
+            print(f"ent_type: {word.ent_type_}")
             print(word.subtree)
             print("Subtree:")
             for subtree in word.subtree:
-                print(subtree)
+                print(subtree) 
             print("\n")
 
              
@@ -233,8 +233,8 @@ def analyseSentence(sentence, source):
                       wsubjpass = subtree
                     if subjpass == '':
                         subjpass = subtree
-                    #else:
-                     #S   subjpass = subjpass + ' ' + subtree
+                    else:
+                       subjpass = subjpass + ' ' + subtree
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)
             subj = subj + subtree

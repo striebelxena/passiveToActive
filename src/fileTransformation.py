@@ -1,5 +1,7 @@
 from pathlib import Path
 import pandas as pd
+import evaluation.fileEvaluation as ev
+
 import passiveToActive as pta
 import spacy
 
@@ -10,10 +12,12 @@ base_dir = Path(__file__).parent
 parent_dir = base_dir.parent
 
 source = 'fileTransformation'
+input_file_name = 'Goldstandard_XenaStriebel_V2.xlsx'
+output_file_name = 'Evaluation6.xlsx'
 
 # Pfade relativ zum Basisverzeichnis bilden
-input_file = parent_dir / 'data' / 'Goldstandard_XenaStriebel_V2.xlsx'
-output_file = parent_dir / 'data' / 'Evaluation5.xlsx'
+input_file = parent_dir / 'data' / input_file_name
+output_file = parent_dir / 'data' / output_file_name
 
 # Laden der Excel-Datei
 df = pd.read_excel(input_file)
@@ -23,14 +27,23 @@ if 'PassiveSentence' not in df.columns:
 
 # Umwandeln der Sätze und Speichern in einer neuen Spalte
 df['TransformedActiveSentence'] = df['PassiveSentence'].apply(lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else s)
+
+
 def calculate_similarity(row):
     goldstandard = nlp(row['ActiveSentence'])
     transformed = nlp(row['TransformedActiveSentence'])
     return goldstandard.similarity(transformed)
 
-df['Similarity'] = df.apply(calculate_similarity, axis=1)
+df['Semantic Similarity'] = df.apply(calculate_similarity, axis=1)
+
+
+
 
 # Speichern der Ergebnisse in eine neue Excel-Datei
 df.to_excel(output_file, index=False)
+
+
+#ev.evaluate_file_results(input_file_name, output_file_name)
+
 
 print("Transformation done.")

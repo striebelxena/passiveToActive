@@ -33,25 +33,45 @@ def conjugateVerb(data):
            print("n")
            print(n)
            print(n.tag_)
+           print("finalaux")
+           print(finalAux)
+
            if c.lemma_ == '.':
                 continue
 
-           if c.lemma_ == 'not' or n.lemma_ == 'not':
+           if  n.lemma_ == 'not':
                 if l.lemma_ == 'be':
                     if n.text == 'being':
-                        finalAux += pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                        finalAux.append(pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num))
                         verbAspect = pat.PROGRESSIVE
                     else:
-                        finalAux += pat.conjugate('do',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                        finalAux.append(pat.conjugate('do',tense=pat.tenses(l.text)[0][0],number=num))
                         
                 elif l.lemma_ == 'have':
-                    finalAux += pat.conjugate('have',tense=pat.tenses(l.text)[0][0],number=num) + ' '
+                    finalAux.append(pat.conjugate('have',tense=pat.tenses(l.text)[0][0],number=num))
+                      
+                elif c.lemma_ == 'have':
+                    num = pat.PLURAL if l.tag_ == 'MD' else num
+                    if num == 'singular':
+                        print("third person")
+                        print(pat.tenses(c.text)[0][0])
+                        if pat.tenses(c.text)[0][0] == 'infinitive':
+                            finalAux.append(pat.conjugate('have',tense='present',person=3, number=num))
+                        else:
+                            finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],person=3, number=num))
+                    else:
+                        finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num))
+                elif c.tag_ == 'MD' or c.lemma_ == 'will':
+                    num = pat.PLURAL
+                    finalAux.append(pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num)) 
+                    
+                
                 finalAux.append('not')
                 
            elif c.lemma_ == 'be':
                 if n.text == 'being':
                     print("progressive")
-                    finalAux += pat.conjugate('be',tense=pat.tenses(c.text)[0][0],number=num) + ' '
+                    finalAux.append(pat.conjugate('be',tense=pat.tenses(c.text)[0][0],number=num))
                     verbAspect = pat.PROGRESSIVE
                
            elif c.lemma_ == 'have':
@@ -60,19 +80,23 @@ def conjugateVerb(data):
                     print("third person")
                     print(pat.tenses(c.text)[0][0])
                     if pat.tenses(c.text)[0][0] == 'infinitive':
-                        finalAux += pat.conjugate('have',tense='present',person=3, number=num) + ' '
+                        finalAux.append(pat.conjugate('have',tense='present',person=3, number=num))
                     else:
-                        finalAux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],person=3, number=num) + ' '
+                        finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],person=3, number=num))
                 else:
-                    finalAux += pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num) + ' '
+                    finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num))
            elif c.tag_ == 'MD' or c.lemma_ == 'will':
                 num = pat.PLURAL
-                finalAux += pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num) + ' '
+                finalAux.append(pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num))
            else:
-                finalAux += c.text_with_ws
+                finalAux.append(c.text)
+
+        print("final Aux vor neg")
+        print(finalAux)
+        modal_aux_verbs = ['should', 'would', 'could', 'have', 'shall', 'will', 'may', 'might', 'must']
         
         for index, element in enumerate(finalAux):
-            if element in ('should', 'would', 'could', 'have', 'shall', 'will', 'may', 'might', 'must'):
+            if any(element in modal_aux_verbs for element in finalAux):
                 break
             elif element == "not" and num == pat.SINGULAR:
                 finalAux[index] = "does not"
@@ -80,7 +104,7 @@ def conjugateVerb(data):
             elif element == "not" and num == pat.PLURAL:
                 finalAux[index]= "do not"
             
-        finalAux = ''.join(finalAux)
+        finalAux = ' '.join(finalAux)
         finalAux.lower().strip()
         print("finalAux")
         print(finalAux)
