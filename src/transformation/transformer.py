@@ -100,7 +100,18 @@ def transformSentence(data, finalVerb, preClause, postClause):
       
 
     remove_duplicates_and_substrings(sorted_components)"""
+
+
     final_components = filtered_components
+    last_component = final_components[-1]
+
+    # if last elements ends with a punctuation mark or whitespace, remove it
+    if final_components[-1][-1] in ('.', '?', '!', ',', ':', ';', ' '):
+       ("final components schleife")
+       final_components[-1] = final_components[-1][:-1]
+    
+    
+    print(final_components[-1][-1])
 
     print("final components:")
     print(final_components)

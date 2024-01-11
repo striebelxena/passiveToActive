@@ -27,7 +27,7 @@ def checkForPassive(sentence):
                   print(passiveClause)
                   return passiveClause
     return False"""
-         auxpass_tokens = [w for w in sentence if w.dep_ == 'auxpass']
+         auxpass_tokens = [w for w in sentence if w.dep_ == 'auxpass' and (w.i == 0 or sentence[w.i-1].lower_ != "to")]
          print("auxpass_tokens")
          print(auxpass_tokens)
 

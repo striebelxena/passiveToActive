@@ -12,8 +12,8 @@ base_dir = Path(__file__).parent
 parent_dir = base_dir.parent
 
 source = 'fileTransformation'
-input_file_name = 'Goldstandard_XenaStriebel_V2.xlsx'
-output_file_name = 'Evaluation6.xlsx'
+input_file_name = 'Test.xlsx'
+output_file_name = 'TestEvaluation.xlsx'
 
 # Pfade relativ zum Basisverzeichnis bilden
 input_file = parent_dir / 'data' / input_file_name

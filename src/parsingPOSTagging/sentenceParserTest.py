@@ -65,14 +65,17 @@ def analyseSentence(sentence, source):
         print("max_index")
         print(max_index)
                 
-        if end_index + 1 < max_index and sentence[end_index + 1].dep_ == 'punct':
+        if end_index + 1 < max_index and sentence[end_index+1].text == ',':
                     subtree = sentence[start_index:end_index+2].text
                     usedIndex.append(end_index+1)
         else:
                     subtree = sentence[start_index:end_index+1].text
 
+        print("subtree after if")
+        print(subtree)
+
         subtree = subtree.strip()
-        if start_index == 0 and sentence[start_index].ent_type_ not in ('PERSON', 'ORG', 'GPE', 'LOC', 'LANGUAGE', 'NORP', 'FAC', 'LAW', 'DATE', 'TIME'):
+        if start_index == 0 and sentence[start_index].pos_ != "PROPN" and sentence[start_index].ent_type_ not in ('PERSON', 'ORG', 'GPE', 'LOC', 'LANGUAGE', 'NORP', 'FAC', 'DATE', 'TIME'):
             subtree = subtree[0].lower() + subtree[1:]
 
         print(f"subtree: {sentence[index].text}")
@@ -132,7 +135,7 @@ def analyseSentence(sentence, source):
      if(word.head.i not in headIds):
         headIds.append(word.head.i)
      if word.i not in usedIndex:
-        print("/n")
+        print("\n")
 
         if source != 'fileTransformation':
             print(f"Text: {word.text}")
@@ -153,6 +156,7 @@ def analyseSentence(sentence, source):
             print(f"morph Case: {word.morph.get('Case')}")        
             print(f"Head: {word.head}")
             print(f"Head dep: {word.head.dep_}")
+            print(f"index: {word.i}")
             print(f"ent_type: {word.ent_type_}")
             print(word.subtree)
             print("Subtree:")
@@ -233,8 +237,11 @@ def analyseSentence(sentence, source):
                       wsubjpass = subtree
                     if subjpass == '':
                         subjpass = subtree
-                    else:
+                    elif [sentence[startIndex].idx-1] == " ":
                        subjpass = subjpass + ' ' + subtree
+                    else:
+                       subjpass = subjpass + subtree
+                         
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)
             subj = subj + subtree

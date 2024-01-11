@@ -40,6 +40,8 @@ def conjugateVerb(data):
                 continue
 
            if  n.lemma_ == 'not':
+                print("n.lemma")
+                print(n.lemma_)
                 if l.lemma_ == 'be':
                     if n.text == 'being':
                         finalAux.append(pat.conjugate('be',tense=pat.tenses(l.text)[0][0],number=num))
@@ -89,7 +91,8 @@ def conjugateVerb(data):
                 num = pat.PLURAL
                 finalAux.append(pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num))
            else:
-                finalAux.append(c.text)
+                if c.lemma_ != 'not':
+                    finalAux.append(c.text)
 
         print("final Aux vor neg")
         print(finalAux)
