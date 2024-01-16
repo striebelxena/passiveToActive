@@ -2,18 +2,25 @@ import passiveToActive
 import evaluation.singleEvaluation as ev
 source ='singleTransformation'
 
-sentence=input('\n\nPassive sentence:\n\n')
+continueProgramm='y'
 
-transformedSentence = passiveToActive.passiveToActive(sentence, source)
+while (continueProgramm =='y'):
+    sentence=input('\n\nPassive sentence:\n\n')
 
-evaluation= input('\n\nEvaluate Sentence? (y/n)\n\n')
+    transformedSentence = passiveToActive.passiveToActive(sentence, source)
 
-if(evaluation=='y'):
-    goldstandard= input('\n\nEnter your expected active sentence:\n\n')
-    ev.evaluate_sentence_results (goldstandard, transformedSentence)
+    evaluation= input('\n\nEvaluate Sentence? (y/n)\n\n')
 
-else:
-    print('Programm finished')
+    if(evaluation=='y'):
+        goldstandard= input('\n\nEnter your expected active sentence:\n\n')
+        ev.evaluate_sentence_results (goldstandard, transformedSentence)
+
+    else:
+        continueProgramm=input('\n\nContinue Programm? (y/n)\n\n')
+        if(continueProgramm=='n'):
+            print('Programm finished')
+            break
+        else: continue
 
 
 

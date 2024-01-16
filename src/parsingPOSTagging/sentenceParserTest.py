@@ -91,6 +91,12 @@ def analyseSentence(sentence, source):
     def add_index(index):
         if index not in usedIndex:
                 usedIndex.append(index)
+    
+    def used_index(index):
+        if index in usedIndex:
+            return True
+        else:
+            return False
          
 
 
@@ -235,12 +241,13 @@ def analyseSentence(sentence, source):
                     subtree, atStart, startIndex = get_subtree(word.i)
                     if word.tag_ == 'WDT':
                       wsubjpass = subtree
-                    if subjpass == '':
+                    elif subjpass == '':
                         subjpass = subtree
-                    elif [sentence[startIndex].idx-1] == " ":
-                       subjpass = subjpass + ' ' + subtree
-                    else:
-                       subjpass = subjpass + subtree
+                    elif verb == '':   
+                        if [sentence[startIndex].idx-1] == " ":
+                            subjpass = subjpass + ' ' + subtree
+                        else:
+                            subjpass = subjpass + subtree
                          
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)
@@ -266,7 +273,10 @@ def analyseSentence(sentence, source):
                     #adverb['bef'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 else:
                     subtree, atStart, startIndex = get_subtree(word.i)
-                    adverb['aft'] = subtree
+                    if adverb['aft'] == '':
+                        adverb['aft'] = subtree
+                    else:
+                        adverb['aft'] = adverb['aft'] + " " + subtree
                     #adverb['aft'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'auxpass': 
             verbForm = word.morph.get('VerbForm')
@@ -317,16 +327,18 @@ def analyseSentence(sentence, source):
             add_index(word.i)
             verbLemma = word.lemma_
             if len(sentence) > word.i+1:
-                if (sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent'):
-                    subtree, atStart, startIndex = get_subtree(word.i+1)
-                    verbAddition = subtree
-                elif sentence[word.i+1].dep_ == 'oprd':
-                    subtree, atStart, startIndex = get_subtree(word.i+1)
-                    verbAddition = subtree
-                elif sentence[word.i+1].head.dep_ == 'oprd':
-                    head_index= sentence[word.i+1].head.i
-                    subtree, atStart, startIndex = get_subtree(head_index)
-                    verbAddition = subtree
+                if used_index(word.i+1) == False:
+                    if (sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent'):
+                    
+                        subtree, atStart, startIndex = get_subtree(word.i+1)
+                        verbAddition = subtree
+                    elif sentence[word.i+1].dep_ == 'oprd':
+                        subtree, atStart, startIndex = get_subtree(word.i+1)
+                        verbAddition = subtree
+                    elif sentence[word.i+1].head.dep_ == 'oprd':
+                        head_index= sentence[word.i+1].head.i
+                        subtree, atStart, startIndex = get_subtree(head_index)
+                        verbAddition = subtree
 
                     #verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
         if word.dep_ == 'prt':
