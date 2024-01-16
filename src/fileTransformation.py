@@ -28,14 +28,14 @@ if 'PassiveSentence' not in df.columns:
 # Umwandeln der Sätze und Speichern in einer neuen Spalte
 df['TransformedActiveSentence'] = df['PassiveSentence'].apply(lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else s)
 
-
+"""
 def calculate_similarity(row):
     goldstandard = nlp(row['ActiveSentence'])
     transformed = nlp(row['TransformedActiveSentence'])
     return goldstandard.similarity(transformed)
 
 df['Semantic Similarity'] = df.apply(calculate_similarity, axis=1)
-
+"""
 
 
 
@@ -43,7 +43,7 @@ df['Semantic Similarity'] = df.apply(calculate_similarity, axis=1)
 df.to_excel(output_file, index=False)
 
 
-#ev.evaluate_file_results(input_file_name, output_file_name)
+ev.evaluate_file_results(input_file_name, output_file_name)
 
 
 print("Transformation done.")

@@ -1,6 +1,7 @@
 
 import spacy
 import pandas as pd
+from bert_score import score
 
 
 # Evaluation
@@ -9,6 +10,18 @@ nlp = spacy.load('en_core_web_lg')
 def evaluate_sentence_results (goldstandard, transformed):
     print("Goldstandard:" + goldstandard)
     print("Output:" + transformed)
+
+    goldstandard_bert = [goldstandard]
+    transformed_bert = [transformed]
+
+    print("Goldstandard_bert:")
+    print(goldstandard_bert)
+    print("Output_bert:" )
+    print( transformed_bert)
+
+    P, R, F1 = score(transformed_bert, goldstandard_bert, lang="en", model_type="bert-base-uncased")
+    print(f"Precision: {P.mean()}, Recall: {R.mean()}, F1-Score: {F1.mean()}")
+            
 
     goldstandard = nlp(goldstandard)
     transformed = nlp(transformed)
@@ -31,7 +44,19 @@ def evaluate_sentence_results (goldstandard, transformed):
     
     print(f"Semantic Similarity: {semantic_similarity}")
     print(f"Dependency Similarity: {dependency_similarity}")
+    # Ihr generierter aktiver Satz
+    candidates = ["Where applicable, the identification number of the notified body responsible for the conformity assessment procedures set out in Article 52 shall follow the CE marking."]
+
+    # Der erwartete Goldstandard-Satz
+    references = ["The identification number of the notified body responsible for the conformity assessment procedures set out in Article 52 shall follow the CE marking where applicable."]
     
+
+
+
+
+    
+
+
     
 
 # Transform the sentences into Doc objects
