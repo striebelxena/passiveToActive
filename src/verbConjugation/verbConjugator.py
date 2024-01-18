@@ -87,9 +87,14 @@ def conjugateVerb(data):
                         finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],person=3, number=num))
                 else:
                     finalAux.append(pat.conjugate('have',tense=pat.tenses(c.text)[0][0],number=num))
+        
+
            elif c.tag_ == 'MD' or c.lemma_ == 'will':
                 num = pat.PLURAL
-                finalAux.append(pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num))
+                if c.text == "could":
+                    finalAux.append("could")
+                else:
+                    finalAux.append(pat.conjugate(c.lemma_,tense=pat.tenses(n.text)[0][0],number=num))
            else:
                 if c.lemma_ != 'not':
                     finalAux.append(c.text)

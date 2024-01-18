@@ -24,12 +24,20 @@ def evaluate_file_results (nameOfInputFile, nameOfOutputFile):
     df = pd.read_excel(input_file)
 
     def calculate_semantic_similarity(row):
+        active_sentence = row['TransformedActiveSentence']
+        if not active_sentence:  # Überprüft, ob der String leer oder None ist
+            return None 
         goldstandard = nlp(row['ActiveSentence'])
+        
         transformed = nlp(row['TransformedActiveSentence'])
         semantic_similarity = goldstandard.similarity(transformed)
         return semantic_similarity
     
     def calculate_dependency_similarity (row):
+        active_sentence = row['TransformedActiveSentence']
+        if not active_sentence:  # Überprüft, ob der String leer oder None ist
+            return None
+        
         goldstandard = nlp(row['ActiveSentence'])
         transformed = nlp(row['TransformedActiveSentence'])
         print("Goldstandard:" + goldstandard)

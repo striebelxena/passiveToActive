@@ -42,6 +42,8 @@ def analyseSentence(sentence, source):
     passiveSentences = list()
     usedIndex = []
     headIds = []
+    signIndex = 0
+    setenceString = str(sentence)
    
 
     def get_subtree(index):
@@ -65,7 +67,7 @@ def analyseSentence(sentence, source):
         print("max_index")
         print(max_index)
                 
-        if end_index + 1 < max_index and sentence[end_index+1].text == ',':
+        if end_index + 1 < max_index and sentence[end_index+1].text in (',', ';', ':', '(', ')', '[', ']', '{', '}', '"', "'"):
                     subtree = sentence[start_index:end_index+2].text
                     usedIndex.append(end_index+1)
         else:
@@ -243,11 +245,30 @@ def analyseSentence(sentence, source):
                       wsubjpass = subtree
                     elif subjpass == '':
                         subjpass = subtree
+                        print("subjpass")
+                        print(subjpass)
+
                     elif verb == '':   
-                        if [sentence[startIndex].idx-1] == " ":
-                            subjpass = subjpass + ' ' + subtree
-                        else:
+                        signIndex = sentence[startIndex].idx-1
+
+                       
+                        print("signIndex")
+                        print(signIndex)
+                        if setenceString[signIndex] != " ":
+                        #if sentence[startIndex]== " ":
+                            print(setenceString[signIndex] )
+
                             subjpass = subjpass + subtree
+                            print("subjpass ohne leerzeichen")
+                            print(subjpass)
+                        else:
+                            subjpass = subjpass + ' ' + subtree
+                            print("subjpass mit leerzeichen")
+                            print(setenceString[signIndex] )
+
+
+                            print(subjpass)
+                         
                          
         if word.dep_ == 'nsubj': 
             subtree, atStart, startIndex = get_subtree(word.i)

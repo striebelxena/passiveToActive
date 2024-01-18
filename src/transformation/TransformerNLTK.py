@@ -2,7 +2,7 @@
 import nltk
 from nltk import CFG
 import nltk
-import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
+#import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
 
 
 
@@ -22,11 +22,10 @@ nltk.download('words')
 ner_tree = nltk.ne_chunk(pos_tags)
 print("NER Tree:", ner_tree)
 
+"""
 # Stellen Sie sicher, dass der NLTK CoreNLPParser auf den Stanford CoreNLP Server zugreift
 # Dies setzt voraus, dass Stanford CoreNLP lokal ausgeführt wird
 import transformation.nounInversion as ni
-
-
 
 def transformSentence(data, finalVerb, preClause, postClause):
  
@@ -81,10 +80,10 @@ def transformSentence(data, finalVerb, preClause, postClause):
     #activeClause = f"{subject} {adverbBefore} {verb} {object} {adverbAfter} {cltree} {prep} {xcomp}" + "."
     #activeClause = activeClause[0].upper() + activeClause[1:]
 
-    """newsent = ' '.join(list(filter(None, [agent,auxstr,adverb['bef'],verb,part,subjpass,adverb['aft'],advcl,prep,xcomp])))+punc
+    newsent = ' '.join(list(filter(None, [agent,auxstr,adverb['bef'],verb,part,subjpass,adverb['aft'],advcl,prep,xcomp])))+punc
     if not rec:
             newsent = newsent[0].upper() + newsent[1:]
-    newdoc += newsent + ' '"""
+    newdoc += newsent + ' '
 
     #components = [prepAtStart, cltreeAtStart, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp]
     # Entfernen Sie alle leeren Strings aus der Liste
@@ -95,6 +94,87 @@ def transformSentence(data, finalVerb, preClause, postClause):
     print(postClause)
 
     #components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
+    """
+    
+VP1 = "V V PP"
+
+grammar1 = CFG.fromstring(f"""
+        S -> NP VP
+        NP -> Det N
+        VP -> V NP | VP PP | {VP1} 
+        PP -> P N
+        Det -> 'The' | 'the'
+        N -> '{object}' | 'subject'
+        V -> 'verb' | 'auxilary'
+        P -> 'by'
+    """)
+
+grammar2 = CFG.fromstring(f"""
+        S -> NP VP
+        NP -> Det N | N | PRP | NNP |NP PP| Det NNP
+        VP ->  MD VP | V | VB VP | VBN PP | V NP NP PP | V NP PP PP | V NP NP PP PP | V NP NP NP | V NP NP NP PP | V NP NP NP NP | V NP NP NP NP PP | V NP NP NP NP NP | V NP NP NP NP NP PP | V NP NP NP NP NP NP | V NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP NP PP | V NP NP N
+        PP -> IN NP 
+        Det -> 'The' | 'the'
+        PRP ->
+        MD -> 
+        VB -> 
+        VBN ->
+        IN -> 
+        NP ->      
+    """)
+grammar3 = CFG.fromstring(f"""
+        S -> NP VP
+        NP -> Det N
+        VP -> V NP | VP PP | {VP1} | MD VP | V | V NP PP | V NP NP | V NP NP PP | V NP PP PP | V NP NP PP PP | V NP NP NP | V NP NP NP PP | V NP NP NP NP | V NP NP NP NP PP | V NP NP NP NP NP | V NP NP NP NP NP PP | V NP NP NP NP NP NP | V NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP NP PP | V NP NP N
+        PP -> P N
+        Det -> 'The' | 'the'
+        N -> '{object}' | 'subject'
+        V -> 'verb' | 'auxilary'
+        P -> 'by'
+    """)
+
+parser = nltk.ChartParser(grammar2)
+sentence = "It shall be convened by the President of the Bundestag.".split()
+
+words = nltk.word_tokenize(sentence)
+
+
+trees = list(parser.parse(words))
+print("trees")
+print(trees)
+print(trees[0])
+print("Schleife")
+if not trees:
+    print("No valid parse trees.")
+else:
+        for tree in trees:
+            print(tree)
+
+def pattern1(parsed_tree):
+        # This is a simplified logic, actual implementation might need to handle more cases
+            subject = parsed_tree[1][2][1][0] # Assuming 'John'
+            verb = "threw"  # getting it from pattern
+            obj = f'{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}' # Assuming 'the ball'
+
+            return f"{subject} {verb} {obj}"
+
+    # Assuming 'trees[0]' is the correct parse tree
+active_sentence = pattern1(trees[0])
+print("active_sentence")
+print(active_sentence)
+
+"""
+
+
+parser = CoreNLPParser(url='http://localhost:5000')
+
+    # Parsen Sie einen Satz
+    sentence = "The quick brown fox jumps over the lazy dog."
+    parse = next(parser.raw_parse(sentence))
+
+    # Dependency Tree zeichnen
+    parse.pretty_print()
+
     
 
     
@@ -116,7 +196,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
     print(components)
 
     filtered_components = [comp for comp in components if comp]
-    """sorted_components = sorted(filtered_components, key=lambda x: len(x) if x else 0, reverse=True)
+    sorted_components = sorted(filtered_components, key=lambda x: len(x) if x else 0, reverse=True)
 
 
     def remove_duplicates_and_substrings(components):
@@ -125,7 +205,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
             filtered_components[comp.i] = ''
       
 
-    remove_duplicates_and_substrings(sorted_components)"""
+    remove_duplicates_and_substrings(sorted_components)
 
 
     final_components = filtered_components
@@ -156,59 +236,6 @@ def transformSentence(data, finalVerb, preClause, postClause):
    
     print(finalClause)
 
-    return finalClause
 
-    subject = subjpass   
-    VP1 = "V V PP"
-
-    grammar1 = CFG.fromstring(f"""
-        S -> NP VP
-        NP -> Det N
-        VP -> V NP | {VP1}
-        PP -> P N
-        Det -> 'The' | 'the'
-        N -> 'ball' | '{subject}'
-        V -> 'thrown' | 'was'
-        P -> 'by'
-    """)
-
-    parser = nltk.ChartParser(grammar1)
-
-    sentence = "The ball was thrown by John".split()
-    trees = list(parser.parse(sentence))
-    print("trees")
-    print(trees)
-    print(trees[0])
-    print("Schleife")
-    if not trees:
-        print("No valid parse trees.")
-    else:
-        for tree in trees:
-            print(tree)
-
-    def pattern1(parsed_tree):
-        # This is a simplified logic, actual implementation might need to handle more cases
-            subject = parsed_tree[1][2][1][0] # Assuming 'John'
-            verb = "threw"  # getting it from pattern
-            obj = f'{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}' # Assuming 'the ball'
-
-            return f"{subject} {verb} {obj}"
-
-    # Assuming 'trees[0]' is the correct parse tree
-    active_sentence = pattern1(trees[0])
-    print("active_sentence")
-    print(active_sentence)
-
-    """
-
-
-    parser = CoreNLPParser(url='http://localhost:5000')
-
-    # Parsen Sie einen Satz
-    sentence = "The quick brown fox jumps over the lazy dog."
-    parse = next(parser.raw_parse(sentence))
-
-    # Dependency Tree zeichnen
-    parse.pretty_print()
-
-    """
+     
+  return finalClause"""

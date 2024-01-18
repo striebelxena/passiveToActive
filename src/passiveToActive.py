@@ -17,6 +17,7 @@ def passiveToActive(sentence, source):
     oldSentences = {}
     newLengths = {}
 
+    sentence = sentence.strip()
 
     doc = nlp(sentence)
     
@@ -25,8 +26,8 @@ def passiveToActive(sentence, source):
     identifiedPassiveSentences, preClause, postClause, indicesOfSubtrees = passiveCheck.checkForPassive(doc)
     #identifiedPassiveSentence = str(identifiedPassiveSentence)
     if (identifiedPassiveSentences == False):
-        print("Sentence is not passive")
-        exit()
+        print("Sentence already active")
+        return "Sentence already active"
     else: # if the sentence is passive, analyse the dependency, conjugate the verb and transform the sentence
         for index, sentence in enumerate(identifiedPassiveSentences):      
             passiveSentence = nlp(sentence.text)
@@ -60,8 +61,9 @@ def passiveToActive(sentence, source):
     #Combine the active sentences into one sentence using the indices
     indices_list = list(activeSentsSorted.keys())
     if len(indices_list) == 1: #if there is only one sentence, return it
+        transformedSentence = activeSentsSorted[indices_list[0]] + ". "
         print(f"Passive Sentence: {doc}")
-        print(f"Active Sentence: {activeSentsSorted[indices_list[0]]}")
+        print(f"Active Sentence: {transformedSentence}")
         print('\n')
         return transformedSentence
     last_indices = indices_list[-1]
@@ -72,7 +74,7 @@ def passiveToActive(sentence, source):
             break
             
         start_index, end_index = map(int, current_indices.split(','))
-        end_index = start_index + newLengths[current_indices] + 1
+        end_index = start_index + newLengths[current_indices] #+ 1
         current_sentence = " ".join(activeSentsSorted[current_indices].split())
         current_sentence = nlp(current_sentence)        
 
@@ -132,7 +134,7 @@ def passiveToActive(sentence, source):
             last_sentence = modified_last_sentence
         final_sentence = last_sentence
 
-    final_sentence = final_sentence + "."
+    final_sentence = final_sentence + ". "
 
     print(f"Passive Sentence: {doc}")
     print(f"Active Sentence: {final_sentence}")

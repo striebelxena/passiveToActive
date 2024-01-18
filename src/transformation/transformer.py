@@ -63,10 +63,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
     #components = [prepAtStart, cltreeAtStart, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp]
     # Entfernen Sie alle leeren Strings aus der Liste
 
-    print("preClause")
-    print(preClause)
-    print("postClause")
-    print(postClause)
+    
 
     #components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
     
@@ -108,12 +105,22 @@ def transformSentence(data, finalVerb, preClause, postClause):
     if final_components[-1][-1] in ('.', '?', '!', ',', ':', ';', ' '):
        ("final components schleife")
        final_components[-1] = final_components[-1][:-1]
+
+    
+    
+    if postClause.endswith('.'):
+       postClause = postClause[:-1]
     
     
     print(final_components[-1][-1])
 
     print("final components:")
     print(final_components)
+
+    print("preClause")
+    print(preClause)
+    print("postClause")
+    print(postClause)
     
     finalClause =  " ".join(final_components).split()
     print("final clause length")
@@ -145,8 +152,11 @@ def transformSentence(data, finalVerb, preClause, postClause):
     if postClause and postClause != 'false':
       if postClause == '.':
         finalClause = finalClause  
+      elif postClause.startswith(","):
+          finalClause = finalClause + postClause
       else:
           finalClause = finalClause + " " + postClause
+         
     
     finalClause = finalClause[0].upper() + finalClause[1:]
    
