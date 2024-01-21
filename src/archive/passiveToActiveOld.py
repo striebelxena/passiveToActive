@@ -1,8 +1,8 @@
 import spacy
 import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
-import parsingPOSTagging.sentenceParser as analyseSentence
-import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
+import src.archive.sentenceParserOld as analyseSentence
+import src.parsingPOSTagging.sentenceParser as analyseSentenceTest
 
 import verbConjugation.verbConjugator as verbConjugator
 import transformation.transformer as transformer

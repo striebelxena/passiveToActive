@@ -2,33 +2,50 @@ import passiveToActive
 import evaluation.singleEvaluation as ev
 
 source = "singleTransformation"
-
 continueProgramm = "y"
+semantic_similarity = 0
+dependency_similarity = 0
 
 while continueProgramm == "y":
+    # Insert your passive sentence here
     sentence = input("\n\nPassive sentence:\n\n")
 
-    transformedSentence = passiveToActive.passiveToActive(sentence, source)
-
-    if transformedSentence == "No passive construction identified":
-        print(transformedSentence)
-        continue
-    elif transformedSentence == "Sentence is not in English":
-        print(f"{transformedSentence}, please enter a sentence in English")
+    if not sentence:
+        print("No sentence entered")
         continue
 
-    evaluation = input("\n\nEvaluate Sentence? (y/n)\n\n")
+    try:
+        # Sentence transformation
+        transformedSentence = passiveToActive.passiveToActive(sentence, source)
 
-    if evaluation == "y":
-        goldstandard = input("\n\nEnter your expected active sentence:\n\n")
-        goldstandard = " ".join(goldstandard.split())
-        print(goldstandard)
-        ev.evaluate_sentence_results(goldstandard, transformedSentence)
-
-    else:
-        continueProgramm = input("\n\nContinue Programm? (y/n)\n\n")
-        if continueProgramm == "n":
-            print("Programm finished")
-            break
-        else:
+        # Input with no passive construction identified
+        if transformedSentence == "No passive construction identified":
+            print(transformedSentence)
             continue
+        # Input with no sentence in English
+        elif transformedSentence == "Sentence is not in English":
+            print(f"{transformedSentence}, please enter a sentence in English")
+            continue
+
+        # Evaluation: compare output with expected active sentence
+        evaluation = input("\n\nEvaluate Sentence? (y/n)\n\n")
+
+        if evaluation == "y":
+            goldstandard = input("\n\nEnter your expected active sentence:\n\n")
+            goldstandard = " ".join(goldstandard.split())
+            print(goldstandard)
+            semantic_similarity, depency_similarity = ev.evaluate_sentence_results(
+                goldstandard, transformedSentence
+            )
+            print(f"Semantic Similarity: {semantic_similarity}")
+            print(f"Dependency Similarity: {dependency_similarity}")
+
+        else:
+            continueProgramm = input("\n\nContinue Programm? (y/n)\n\n")
+            if continueProgramm == "n":
+                print("Programm finished")
+                break
+            else:
+                continue
+    except Exception as e:
+        print(f"An unexpected error occured: {e}")

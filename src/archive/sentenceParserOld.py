@@ -41,82 +41,26 @@ def analyseSentence(sentence, source):
     structure = {}
     passiveSentences = list()
     usedIndex = []
-    headIds = []
-    signIndex = 0
-    setenceString = str(sentence)
-   
-
-    def get_subtree(index):
-        subtree_span = list(sentence[index].subtree)
-        for span_word in subtree_span:
-                    if span_word.i not in usedIndex:
-                        usedIndex.append(span_word.i)
-
-        print(f"subtree_span:{sentence[index].text}")
-        print(subtree_span)
-
-        start_index = subtree_span[0].i
-        print("start_index")
-        print(start_index)
-            
-        end_index = subtree_span[-1].i
-        print("end_index")
-        print(end_index)
-
-        max_index = len(sentence)-1
-        print("max_index")
-        print(max_index)
-                
-        if end_index + 1 < max_index and sentence[end_index+1].text in (',', ';', ':', '(', ')', '[', ']', '{', '}', '"', "'"):
-                    subtree = sentence[start_index:end_index+2].text
-                    usedIndex.append(end_index+1)
-        else:
-                    subtree = sentence[start_index:end_index+1].text
-
-        print("subtree after if")
-        print(subtree)
-
-        subtree = subtree.strip()
-        if start_index == 0 and sentence[start_index].pos_ != "PROPN" and sentence[start_index].ent_type_ not in ('PERSON', 'ORG', 'GPE', 'LOC', 'LANGUAGE', 'NORP', 'FAC', 'DATE', 'TIME'):
-            subtree = subtree[0].lower() + subtree[1:]
-
-        print(f"subtree: {sentence[index].text}")
-        print(subtree)
-        print("usedIndex")
-        print(usedIndex)
-                
-        atStart = any(word.is_sent_start for word in subtree_span)
-       
-        return subtree, atStart, start_index
-                
     
-    def add_index(index):
-        if index not in usedIndex:
-                usedIndex.append(index)
-    
-    def used_index(index):
-        if index in usedIndex:
-            return True
-        else:
-            return False
-         
+    print("cltree")
+    print(cltree)
 
 
   
 
     # Add custom extension to Token class to save the position of the token in the sentence
-    """if not Token.has_extension("sentPosition"):
+    if not Token.has_extension("sentPosition"):
         Token.set_extension("sentPosition", default= 1)
 
         for token in sentence:
             token._.sentPosition = token.i
 
         for token in sentence:
-            print(f"token: {token.text}, sentPosition: {token._.sentPosition}")"""
+            print(f"token: {token.text}, sentPosition: {token._.sentPosition}")
 
     # General analysis of sentence structure 
 
-    """for word in sentence:
+    for word in sentence:
          if word.dep_ in ('acl','advcl', 'relcl', 'ccomp', 'xcomp', 'csubj', 'cobj', 'conj', 'cc', 'auxpass', 'subjpass', 'nsubjpass', 'dobj', 'iobj', 'agent', 'pcomp', 'acomp', 'appos', ):
                 subclause = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 structure[f"{word.dep_} {word._.sentPosition} " ] = subclause
@@ -137,14 +81,10 @@ def analyseSentence(sentence, source):
     print("chunks")
             
     for chunk in sentence.noun_chunks:
-        print(chunk.text)"""
+        print(chunk.text)
 
     for word in sentence:
-     if(word.head.i not in headIds):
-        headIds.append(word.head.i)
      if word.i not in usedIndex:
-        print("\n")
-
         if source != 'fileTransformation':
             print(f"Text: {word.text}")
             print(f"Part of Speech: {word.pos_}") # POS Tagging
@@ -164,12 +104,10 @@ def analyseSentence(sentence, source):
             print(f"morph Case: {word.morph.get('Case')}")        
             print(f"Head: {word.head}")
             print(f"Head dep: {word.head.dep_}")
-            print(f"index: {word.i}")
-            print(f"ent_type: {word.ent_type_}")
             print(word.subtree)
             print("Subtree:")
             for subtree in word.subtree:
-                print(subtree) 
+                print(subtree)
             print("\n")
 
              
@@ -177,14 +115,6 @@ def analyseSentence(sentence, source):
             print("acl")
             print(word)
             if word.head.dep_ in ('ROOT', 'auxpass'):
-                subtree, atStart, startIndex = get_subtree(word.i)
-                if atStart:
-                    cltreeAtStart = subtree
-                else:
-                    cltree += [subtree]
-                     
-
-                """
                 cltree_span = list(word.subtree)
                 for span_word in cltree_span:
                     if span_word.i not in usedIndex:
@@ -223,7 +153,7 @@ def analyseSentence(sentence, source):
                   cltreeAtStart = cltree
                   cltree = []
                 
-               """
+               
                 """cltree = str(cltree)
                 print("string cltree")
                 print(cltree)"""
@@ -240,65 +170,29 @@ def analyseSentence(sentence, source):
                     """subjpass_span = list(word.subtree)
                     print("subjpass_span")
                     print(subjpass_span)"""
-                    subtree, atStart, startIndex = get_subtree(word.i)
+                    
+                    subjpass_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                     if word.tag_ == 'WDT':
-                      wsubjpass = subtree
-                    elif subjpass == '':
-                        subjpass = subtree
-                        print("subjpass")
-                        print(subjpass)
-
-                    elif verb == '':   
-                        signIndex = sentence[startIndex].idx-1
-
-                       
-                        print("signIndex")
-                        print(signIndex)
-                        if setenceString[signIndex] != " ":
-                        #if sentence[startIndex]== " ":
-                            print(setenceString[signIndex] )
-
-                            subjpass = subjpass + subtree
-                            print("subjpass ohne leerzeichen")
-                            print(subjpass)
-                        else:
-                            subjpass = subjpass + ' ' + subtree
-                            print("subjpass mit leerzeichen")
-                            print(setenceString[signIndex] )
-
-
-                            print(subjpass)
-                         
-                         
+                      wsubjpass = subjpass_str
+                    else:
+                        subjpass = subjpass + subjpass_str
         if word.dep_ == 'nsubj': 
-            subtree, atStart, startIndex = get_subtree(word.i)
-            subj = subj + subtree
-            #subj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+            subj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
             #if word.head.dep_ == 'auxpass': 
             """if word.head.head.dep_ == 'ROOT': 
                     subjpass = subj """
         if word.dep_ == 'mark':
             if word.head.dep_ == 'ROOT':
-                add_index(word.i)
                 mark_str = word.text
                 mark += [mark_str]
         if word.dep_ in ('advmod','npadvmod','oprd', 'amod'):
             if word.head.dep_ == 'ROOT':
                 if word.is_sent_start:
-                    subtree, atStart, startIndex = get_subtree(word.i)
-                    adverb['start'] = subtree
-                    #adverb['start'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    adverb['start'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 elif verb == '':
-                    subtree, atStart, startIndex = get_subtree(word.i)
-                    adverb['bef'] = subtree
-                    #adverb['bef'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    adverb['bef'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 else:
-                    subtree, atStart, startIndex = get_subtree(word.i)
-                    if adverb['aft'] == '':
-                        adverb['aft'] = subtree
-                    else:
-                        adverb['aft'] = adverb['aft'] + " " + subtree
-                    #adverb['aft'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                    adverb['aft'] = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'auxpass': 
             verbForm = word.morph.get('VerbForm')
             if sentence[word.i-1].lemma_ == 'have':    
@@ -337,46 +231,22 @@ def analyseSentence(sentence, source):
         if word.dep_ in ('aux','auxpass','neg'):
             if word.head.dep_ in ('ROOT', 'relcl', 'advcl', 'xcomp', 'ccomp'):
                 if word.dep_ == ('auxpass'):
-                    add_index(word.i)
                     aux += [word]
                 else:                     
-                     if(sentence[word.i-1].dep_ == 'auxpass') or (sentence[word.i+1].dep_ == 'auxpass') or (sentence[word.i+2].dep_ == 'auxpass'):
-                        add_index(word.i)
-                        aux += [word]
+                     if(sentence[word.i+1].dep_ == 'auxpass') or (sentence[word.i+2].dep_ == 'auxpass'):
+                          aux += [word]
         if word.dep_ == 'ROOT':
             verb = word.text
-            add_index(word.i)
             verbLemma = word.lemma_
             if len(sentence) > word.i+1:
-                if used_index(word.i+1) == False:
-                    if (sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent'):
-                    
-                        subtree, atStart, startIndex = get_subtree(word.i+1)
-                        verbAddition = subtree
-                    elif sentence[word.i+1].dep_ == 'oprd':
-                        subtree, atStart, startIndex = get_subtree(word.i+1)
-                        verbAddition = subtree
-                    elif sentence[word.i+1].head.dep_ == 'oprd':
-                        head_index= sentence[word.i+1].head.i
-                        subtree, atStart, startIndex = get_subtree(head_index)
-                        verbAddition = subtree
-
-                    #verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
+                if sentence[word.i+1].tag_ == 'IN' and sentence[word.i+1].dep_ != 'agent':
+                    verbAddition = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in sentence[word.i+1].subtree).strip()
         if word.dep_ == 'prt':
             if word.head.dep_ == 'ROOT':
-                subtree, atStart, startIndex = get_subtree(word.i)
-                part = subtree
-
-                #part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                part = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'prep':
             #if word.head.dep_ in ('ROOT', 'auxpass'):
-                subtree, atStart, startIndex = get_subtree(word.i)
-                prep_str = subtree
-                if atStart:
-                    prepAtStart = prep_str
-                else:
-                    prep += [prep_str]
-                """ prep_span = list(word.subtree)
+                prep_span = list(word.subtree)
                 print("prep_span")
                 print(prep_span)
 
@@ -406,7 +276,8 @@ def analyseSentence(sentence, source):
                 if atStart:
                   prepAtStart = prep
                   prep = []
-                if word.is_sent_start:
+                
+                  """if word.is_sent_start:
                     prepAtStart = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                   else:
                     prep_str = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
@@ -416,51 +287,34 @@ def analyseSentence(sentence, source):
             if word.head.dep_ == 'agent':
                 #if word.head.head.dep_ == 'ROOT':
                 if word.head.head.dep_ in ('ROOT', 'relcl', 'advcl', 'xcomp', 'ccomp'):
-                    subtree, atStart, startIndex = get_subtree(word.i)
-                    agent = subtree
-                    #agent = ''.join(w.text + ', ' if w.dep_=='appos' else (w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws) for w in word.subtree).strip()
+                    agent = ''.join(w.text + ', ' if w.dep_=='appos' else (w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws) for w in word.subtree).strip()
                     aplural = word.tag_ in ('NNS','NNPS')
         if word.dep_ == "agent":
             agentExists = True
         if word.dep_ == 'cc':
-            subtree, atStart, startIndex = get_subtree(word.i)
-            cconj = subtree
-            #cconj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree)
+            cconj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree)
         if word.dep_ in ('xcomp'):
             if word.head.dep_ == 'ROOT':
-                subtree, atStart, startIndex = get_subtree(word.i)
-                xcomp = subtree
-                #xcomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                xcomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
                 """Sthat = xcomp.startswith('that')
                 xcomp = pass2act(xcomp, True).strip(' .')
                 if not xcomp.startswith('that') and that:
                     xcomp = 'that '+xcomp"""
-        if word.dep_ in ('ccomp'):
-            if word.head.dep_ == 'ROOT':
-                subtree, atStart, startIndex = get_subtree(word.i)
-                ccomp = subtree
-                #ccomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ == 'punct':
             if word.text != '"':
                 punc = word.text
-                add_index(word.i)
-        
+        if word.dep_ in ('ccomp'):
+            if word.head.dep_ == 'ROOT':
+                ccomp = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
         if word.dep_ in ('conj'):
             if word.head.dep_ == 'ROOT':
-                subtree, atStart, startIndex = get_subtree(word.i)
-                conj = subtree
-                #conj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
+                conj = ''.join(w.text_with_ws.lower() if w.tag_ not in ('NNP','NNPS') else w.text_with_ws for w in word.subtree).strip()
     if not agentExists: # if no agent is found:
         agent = "one"
         aplural = False
     
     if aplural:
         aNumber = en.PLURAL
-
-    print("headIs")
-    print(headIds)
-    print("usedIndex")
-    print(usedIndex)
     if source != 'fileTransformation':
         print(f"subjpass: {subjpass}")
         print(f"subjpass-index: {wsubjpass}") #index???
@@ -516,7 +370,47 @@ def analyseSentence(sentence, source):
         "punc": punc
         }
     
+    def get_subtree(index):
+        subtree_span = list(sentence[index].subtree)
+        for span_word in subtree_span:
+                    if span_word.i not in usedIndex:
+                        usedIndex.append(span_word.i)
+
+        print(f"subtree_span:{sentence[index].text}")
+        print(subtree_span)
+
+        start_index = subtree_span[0].i
+        print("start_index")
+        print(start_index)
+            
+        end_index = subtree_span[-1].i
+        print("end_index")
+        print(end_index)
+
+        max_index = len(sentence)-1
+        print("max_index")
+        print(max_index)
+                
+        if end_index + 1 < max_index and sentence[end_index + 1].dep_ == 'punct':
+                    subtree = sentence[start_index:end_index+2].text
+                    usedIndex.append(end_index+1)
+        else:
+                    subtree = sentence[start_index:end_index+1].text
+
+        print(f"subtree: {sentence[index].text}")
+        print(subtree)
+        print("usedIndex")
+        print(usedIndex)
+                
+        atStart = any(word.is_sent_start for word in subtree_span)
+       
+        return subtree, atStart
+                
     
+    def add_index():
+        if word.i not in usedIndex:
+                usedIndex.append(word.i)
+         
     
 
     return results
