@@ -7,36 +7,44 @@ from nltk import CFG
 import nltk
 
 # Deaktivating of the Stanza-logs otherwise too much unnecessary output is generated
-logging.getLogger('stanza').setLevel(logging.WARNING) 
+logging.getLogger("stanza").setLevel(logging.WARNING)
 
-#stanza.download('en') # download English model
+# stanza.download('en') # download English model
 
 
-nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma, depparse,constituency', download_method=None)
-doc = nlp('It shall be convened by the President of the Bundestag. ')
+nlp = stanza.Pipeline(
+    lang="en",
+    processors="tokenize,mwt,pos,lemma, depparse,constituency",
+    download_method=None,
+)
+doc = nlp("It shall be convened by the President of the Bundestag. ")
 tree = doc.sentences[0].constituency
 endpoints = {}
 
 
-def traverse_constituency_tree(node, parent_label=None):
+def traverse_constituency_tree(node, index, parent_label=None):
     if not node.children:  # Überprüft, ob es sich um einen Blattknoten handelt
         print(f"Word: {node.label}, POS: {parent_label}")
         if parent_label in endpoints:
             # Wenn es bereits einen Eintrag für das POS-Tag gibt, fügen Sie das Wort hinzu
-            endpoints[parent_label] = f"{endpoints[parent_label]}| {node.label}"
-        else: 
-            endpoints[parent_label] =  node.label
+            endpoints[
+                f"{parent_label} {index}"
+            ] = f"{endpoints[parent_label]}| {node.label}"
+        else:
+            endpoints[parent_label] = node.label
         print("endpoints")
         print(endpoints)
     else:
         # Für nicht-Blattknoten
-        for child in node.children:
-            traverse_constituency_tree(child, parent_label=node.label)
-
-traverse_constituency_tree(tree)
+        for i, child in node.children:
+            traverse_constituency_tree(child, parent_label=node.label, index=i)
 
 
-grammar2 = CFG.fromstring(f"""
+traverse_constituency_tree(tree, index=0)
+
+
+grammar2 = CFG.fromstring(
+    f"""
         S -> NP VP
         NP -> Det N | N | PRP | NNP |NP PP| Det NNP
         VP ->  MD VP | V | VB VP | VBN PP | V NP NP PP | V NP PP PP | V NP NP PP PP | V NP NP NP | V NP NP NP PP | V NP NP NP NP | V NP NP NP NP PP | V NP NP NP NP NP | V NP NP NP NP NP PP | V NP NP NP NP NP NP | V NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP NP PP | V NP NP N
@@ -47,7 +55,8 @@ grammar2 = CFG.fromstring(f"""
         VB -> '{endpoints["VB"]}'
         VBN ->'{endpoints["VBN"]}'
         IN -> '{endpoints["IN"]}'
-    """)
+    """
+)
 
 
 parser = nltk.ChartParser(grammar2)
@@ -60,25 +69,23 @@ print("Schleife")
 if not trees:
     print("No valid parse trees.")
 else:
-        for tree in trees:
-            print(tree)
+    for tree in trees:
+        print(tree)
 
 
 def pattern1(parsed_tree):
-        # This is a simplified logic, actual implementation might need to handle more cases
-            subject = parsed_tree[1][2][1][0] # Assuming 'John'
-            verb = "threw"  # getting it from pattern
-            obj = f'{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}' # Assuming 'the ball'
+    # This is a simplified logic, actual implementation might need to handle more cases
+    subject = parsed_tree[1][2][1][0]  # Assuming 'John'
+    verb = "threw"  # getting it from pattern
+    obj = f"{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}"  # Assuming 'the ball'
 
-            return f"{subject} {verb} {obj}"
+    return f"{subject} {verb} {obj}"
 
-    # Assuming 'trees[0]' is the correct parse tree
+
+# Assuming 'trees[0]' is the correct parse tree
 active_sentence = pattern1(trees[0])
 print("active_sentence")
-print(active_sentence)           
-
-
-
+print(active_sentence)
 
 
 """for node in node.children:
@@ -94,8 +101,6 @@ print(active_sentence)
         for child in node.children:
             traverse_constituency_tree(child)
             print(f"Phrase: {node.label}")"""
-    	
-
 
 
 print("tree")
@@ -104,22 +109,21 @@ print("pretty print")
 print(tree.pretty_print())
 print("children")
 print(tree.children[0].children[1])
-#print(tree.children[0].children[1].children[1])
+# print(tree.children[0].children[1].children[1])
 
 endpunkte = {}
 
+
 def finde_endpunkte(node, endpunkte):
-    
     if not node.children:  # Wenn der Knoten keine Kinder hat, ist es ein Blatt
-            label = node.label
-            print("label")
-            print(label)
-            endpunkte[label] = node
-    
+        label = node.label
+        print("label")
+        print(label)
+        endpunkte[label] = node
+
     else:
         for child in node.children:
             finde_endpunkte(child, endpunkte)
-
 
 
 # Initialisieren Sie ein Wörterbuch, um die Endpunkte zu speichern
@@ -131,6 +135,7 @@ finde_endpunkte(tree, endpunkte)
 print("endpunkte")
 print(endpunkte)
 print("ende Endpunkte")
+
 
 """"
 def walk_tree(node):

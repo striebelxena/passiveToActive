@@ -15,8 +15,8 @@ def checkForPassive(sentence):
     indicesOfSubtrees = []
     for word in sentence:
         # check if the sentence is passive by checking if the dependency is a passive subject and if there is an auxilarry verb in passive
-        try:
-            if word.dep_ in ("nsubjpass", "csubjpass"):
+        if word.dep_ in ("nsubjpass", "csubjpass"):
+            try:
                 auxpass_tokens = [
                     w
                     for w in sentence
@@ -40,11 +40,11 @@ def checkForPassive(sentence):
                         print("Start Index:", start_index, "End Index:", end_index)
                         print("Pre Clause:", preClause)
                         print("Post Clause:", postClause)
-        except Exception as e:
-            print(
-                f"There has been the following error in checking whether the sentence has passive constructions: {e}"
-            )
-            raise
 
-            return passiveClause, preClause, postClause, indicesOfSubtrees
-    return False, False, False, False
+            except Exception as e:
+                print(
+                    f"There has been the following error in checking whether the sentence has passive constructions: {e}"
+                )
+                raise
+
+    return passiveClause, preClause, postClause, indicesOfSubtrees

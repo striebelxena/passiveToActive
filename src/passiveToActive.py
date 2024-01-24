@@ -1,7 +1,7 @@
 import spacy
 import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
-import src.parsingPOSTagging.sentenceParser as analyseSentenceTest
+import parsingPOSTagging.sentenceParser as analyseSentence
 import verbConjugation.verbConjugator as verbConjugator
 import transformation.transformer as transformer
 from langdetect import detect
@@ -31,12 +31,13 @@ def passiveToActive(sentence, source):
 
     """
     activeSentences = {}
+    activeSubclauses = {}
     oldSentences = {}
     newLengths = {}
 
     # check if the sentence is in English
     if detect(sentence) != "en":
-        return "Sentence is not in English"
+        return "Sentence is not in English", {}
 
     sentence = sentence.strip()
     doc = nlp(sentence)
@@ -49,8 +50,8 @@ def passiveToActive(sentence, source):
         indicesOfSubtrees,
     ) = passiveCheck.checkForPassive(doc)
 
-    if identifiedPassiveSentences == False:
-        return "No passive construction identified"
+    if identifiedPassiveSentences == []:
+        return "\n No passive construction identified", None
     else:
         # if passive constructions have been identified to the following steps for each identified passive construction
         for index, sentence in enumerate(identifiedPassiveSentences):
@@ -58,7 +59,7 @@ def passiveToActive(sentence, source):
                 passiveSentence = nlp(sentence.text)
 
                 # analyse the sentence
-                analysis_results = analyseSentenceTest.analyseSentence(
+                analysis_results = analyseSentence.analyseSentence(
                     passiveSentence, source
                 )
                 print(f"results: {analysis_results}")
@@ -67,12 +68,17 @@ def passiveToActive(sentence, source):
                 verbActive = verbConjugator.conjugateVerb(analysis_results)
 
                 # transform the sentence by combining the seperate parts
-                transformedSentence, newLength = transformer.transformSentence(
+                (
+                    transformedSentence,
+                    transformedSubclause,
+                    newLength,
+                ) = transformer.transformSentence(
                     analysis_results, verbActive, preClause[index], postClause[index]
                 )
 
                 # save the transformed sentence, the original sentence and the length of the new sentence for final composition later
                 activeSentences[f"{indicesOfSubtrees[index]}"] = transformedSentence
+                activeSubclauses[f"{indicesOfSubtrees[index]}"] = transformedSubclause
                 oldSentences[f"{indicesOfSubtrees[index]}"] = sentence.text
                 newLengths[f"{indicesOfSubtrees[index]}"] = newLength
 
@@ -84,12 +90,15 @@ def passiveToActive(sentence, source):
                 print("Active Sentences: ")
                 print(activeSentences)
                 print(f"Active Subsentence: {transformedSentence}")
+                print(f"Active Subclause: {activeSubclauses}")
+
                 print("-------------------------------------")
             except Exception as e:
-                print(f"An unexpected error accured: {e}")
+                print(f"An unexpected error occured during the conversion: {e}")
+                raise
 
     try:
-        # Sort the active sentences by the difference between the start and end index
+        # Sort the active sentences by the difference between the start and end index, so that the shortest sentence is first and can be inserted into the longest so the main sentence
         def calc_diff(key):
             start, end = key.split(",")
             return int(end) - int(start)
@@ -100,6 +109,8 @@ def passiveToActive(sentence, source):
         print("Sorted Active Sentences: ")
         print(activeSentsSorted)
 
+        print("transformed active subclause")
+        print(activeSubclauses)
         # Combine the active sentences into one sentence using the indices
         indices_list = list(activeSentsSorted.keys())
         if len(indices_list) == 1:
@@ -108,7 +119,7 @@ def passiveToActive(sentence, source):
             print(f"Passive Sentence: {doc}")
             print(f"Active Sentence: {transformedSentence}")
             print("\n")
-            return transformedSentence
+            return transformedSentence, activeSubclauses
 
         last_indices = indices_list[-1]
 
@@ -173,4 +184,4 @@ def passiveToActive(sentence, source):
         )
         raise
 
-    return final_sentence
+    return final_sentence, activeSubclauses

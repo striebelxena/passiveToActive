@@ -107,6 +107,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
         print(newLength)
 
         finalClause = " ".join(finalClause)
+        finalActiveSubclause = finalClause
 
         # Combine the components to a new sentence and put it between the pre and post clause
         if preClause and preClause != "false":
@@ -125,4 +126,4 @@ def transformSentence(data, finalVerb, preClause, postClause):
         print(f"There occured the following error during forming the new sentence: {e}")
         raise
 
-    return finalClause, newLength
+    return finalClause, finalActiveSubclause, newLength

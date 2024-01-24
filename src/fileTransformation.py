@@ -4,6 +4,8 @@ import evaluation.fileEvaluation as ev
 import passiveToActive as pta
 import spacy
 from bert_score import score
+from sentence_transformers import SentenceTransformer, util
+import evaluation.singleEvaluation as ev
 
 
 nlp = spacy.load("en_core_web_lg")
@@ -41,28 +43,71 @@ try:
         raise ValueError("File needs to have a column named 'PassiveSentence'.")
 
     # Convert the sentences and save the output in a new column called "TransformedActiveSentence"
-    df["TransformedActiveSentence"] = df["PassiveSentence"].apply(
-        lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else s
+    """transformedSentence = df["PassiveSentence"].apply(
+        lambda s: pta.passiveToActive(s, source)[0]
+        if isinstance(s, str) and isinstance(pta.passiveToActive(s, source), tuple)
+        else s
     )
 
-    print("Spalten:")
-    print(df.columns)
+    transformedSentence = df["PassiveSentence"].apply(
+        lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else s
+    )
+    df["TransformedActiveSentence"] = transformedSentence
 
-    # Order of the columns in the output file
-    new_column_order = [
-        "PassiveSentence",
-        "ActiveSentence",
-        "TransformedActiveSentence",
-    ] + [
-        col
-        for col in df.columns
-        if col not in ["PassiveSentence", "ActiveSentence", "TransformedActiveSentence"]
-    ]
+    transformedSubclauses = df["TransformedActiveSentence"].apply(
+        lambda x: x[1] if isinstance(x, tuple) else None
+    )
+    transformedActiveSentence = df["TransformedActiveSentence"].apply(
+        lambda x: x[0] if isinstance(x, tuple) else None
+    )
+    df["TransformedActiveSentence"] = transformedActiveSentence"""
 
-    df = df[new_column_order]
+    df["TransformedActiveSentence"], df["TransformedSubclauses"] = zip(
+        *df["PassiveSentence"].apply(
+            lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else (s, "-")
+        )
+    )
+    # replace empty strings with a default value
+    df["TransformedSubclauses"] = df["TransformedSubclauses"].apply(
+        lambda x: {"000": "-"} if x is None or x == "" else x
+    )
+    # print(f"transformedSubclauses: {transformedSubclauses}")
+
+    # Check if the input file has a column named "ActiveSentence"
+    if "ActiveSentence" not in df.columns:
+        raise ValueError("File needs to have a column named 'ActiveSentence'.")
+
+    def calculate_similarity(row):
+        semantic_similarity = 0
+        goldstandard = row["ActiveSentence"]
+        transformed = row["TransformedActiveSentence"]
+        transformedSubclauses = row["TransformedSubclauses"]
+
+        print(f"transformedSubclauses: {transformedSubclauses}")
+        print(f"transformed: {transformed}")
+        print(f"goldstandard: {goldstandard}")
+
+        for subclause in transformedSubclauses.items():
+            print(f"subclause: {subclause}")
+            if "000" in subclause:
+                final_semantic_similarity = None
+                continue
+
+            semantic_similarity += ev.evaluate_sentence_results(
+                goldstandard, transformed, subclause, source
+            )
+            print(f"Individual Semantic Similarity:{semantic_similarity}")
+
+            final_semantic_similarity = (
+                semantic_similarity / len(transformedSubclauses)
+                if transformedSubclauses
+                else None
+            )
+        print(f"Semantic Similarity: {final_semantic_similarity}")
+        return final_semantic_similarity
 
     # Calcualte the semantic similarity score for each sentence with BERT
-    def calculate_similarity(row):
+    def calculate_metrics(row):
         """
         This function takes a goldstandard sentence and the transformed sentence as input and returns the similarity score.
         Input: the output of the transformation function and the goldstandard sentence
@@ -87,12 +132,12 @@ try:
 
         try:
             if (
-                row["TransformedActiveSentence"] == "No passive construction identified"
+                "No passive construction identified" in row["TransformedActiveSentence"]
             ) and (row["Mode"] == "active"):
                 TrueNegatives += 1  # correctly identified as active -> True Negatives
                 return None
             elif (
-                row["TransformedActiveSentence"] == "No passive construction identified"
+                "No passive construction identified" in row["TransformedActiveSentence"]
             ) and (row["Mode"] == "passive"):
                 FalseNegativesWronglyIdentified += (
                     1  # wrongly not identified as passive -> False Negatives
@@ -106,23 +151,14 @@ try:
             ) and (row["Mode"] == "active"):
                 FalsePositives += 1  # wrongly identified as passive -> False Positive
 
-            goldstandard = row["ActiveSentence"]
-            transformed = row["TransformedActiveSentence"]
-
-            # Calculate the semantic similarity score between output and goldstandard with BERT
-            P, R, F1 = score(
-                [transformed], [goldstandard], lang="en", model_type="bert-base-uncased"
-            )
-            print(
-                f"BERT: Precision: {P.mean()}, Recall: {R.mean()}, F1-Score: {F1.mean()}"
-            )
-            semanticSimilarity = F1
-            if semanticSimilarity > 0.999:
-                TruePositives += 1  # correctly transformed -> True Positives
-            else:
-                FalseNegativesWronglyTransformed += (
-                    1  # wrongly transformed -> False Negatives
-                )
+            final_semantic_similarity = row["SemanticSimilarity"]
+            if final_semantic_similarity is not None:
+                if final_semantic_similarity > 0.95:
+                    TruePositives += 1  # correctly transformed -> True Positives
+                else:
+                    FalseNegativesWronglyTransformed += (
+                        1  # wrongly transformed -> False Negatives
+                    )
         except Exception as e:
             print(
                 f"An unexpected error occured during the evaluation of the ouput: {e}"
@@ -131,8 +167,31 @@ try:
 
         return semanticSimilarity
 
+    # Ask user if s/he wants to evaluate the results
+    evaluation = input("\n\nEvaluate Results? (y/n)\n\n")
+    if evaluation == "y":
+        df["SemanticSimilarity"] = df.apply(calculate_similarity, axis=1)
+        df.apply(calculate_metrics, axis=1)
+
+    print("Spalten:")
+    print(df.columns)
+
+    # Order of the columns in the output file
+    new_column_order = [
+        "PassiveSentence",
+        "ActiveSentence",
+        "TransformedActiveSentence",
+    ] + [
+        col
+        for col in df.columns
+        if col not in ["PassiveSentence", "ActiveSentence", "TransformedActiveSentence"]
+    ]
+
+    df = df[new_column_order]
+
     # Calculate the semantic similarity score for each sentence with BERT
-    df["Semantic Similarity"] = df.apply(calculate_similarity, axis=1)
+
+    # df["Semantic Similarity"] = semanticSimilarity
 
     # Store the semantic similarity score in a new column
     df.to_excel(output_file, index=False)
@@ -155,12 +214,9 @@ try:
     print(f"Number of sentences incorrectly transformed: {FalseNegatives}")
 
     # Ask user if s/he wants to evaluate the results
-    evaluation = input("\n\nEvaluate Results? (y/n)\n\n")
 
-    if evaluation == "y":
-        FalseNegatives = (
-            FalseNegativesWronglyIdentified + FalseNegativesWronglyTransformed
-        )
+    FalseNegatives = FalseNegativesWronglyIdentified + FalseNegativesWronglyTransformed
+    if (TruePositives + FalsePositives) != 0 and (TruePositives + FalseNegatives) != 0:
         recall = TruePositives / (TruePositives + FalseNegatives)
         print(f"Recall: {recall}")
         precision = TruePositives / (TruePositives + FalsePositives)
