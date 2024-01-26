@@ -1,9 +1,9 @@
 import spacy
 import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
-import parsingPOSTagging.sentenceParser as analyseSentence
+import analysePassiveConstruction.sentenceParser as analyseSentence
 import verbConjugation.verbConjugator as verbConjugator
-import transformation.transformer as transformer
+import composition.sentenceComposition as sentenceComposition
 from langdetect import detect
 
 
@@ -72,7 +72,7 @@ def passiveToActive(sentence, source):
                     transformedSentence,
                     transformedSubclause,
                     newLength,
-                ) = transformer.transformSentence(
+                ) = sentenceComposition.transformSentence(
                     analysis_results, verbActive, preClause[index], postClause[index]
                 )
 

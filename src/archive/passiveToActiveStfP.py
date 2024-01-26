@@ -7,7 +7,7 @@ import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
 import src.archive.sentenceParserOld as analyseSentence
 import verbConjugation.verbConjugator as verbConjugator
-import transformation.transformer as transformer
+import src.composition.sentenceComposition as sentencComposition
 
 
 # Pfad zum Stanford Parser

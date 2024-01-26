@@ -1,6 +1,3 @@
-# import spacy
-
-
 def checkForPassive(sentence):
     """
     This function checks if the sentence is passive by checking if the dependency is a passive subject and if there is an auxilarry verb in passive

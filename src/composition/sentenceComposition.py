@@ -1,4 +1,4 @@
-import transformation.nounInversion as ni
+import composition.nounInversion as ni
 
 
 def transformSentence(data, finalVerb, preClause, postClause):
@@ -23,13 +23,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
     adverbBefore = data.get("adverb")["bef"]
     adverbAfter = data.get("adverb")["aft"]
     cltreeAtStart = data.get("cltreeAtStart")
-    print("cltreeatStart")
-    print(cltreeAtStart)
-    print(len(cltreeAtStart))
     cltree = data.get("cltree")
-    print("cltree")
-    print(cltree)
-    print(len(cltree))
     cltree = " ".join(cltree)
     prepAtStart = data.get("prepAtStart")
     prep = data.get("prep")
@@ -47,6 +41,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
     preClause = str(preClause)
     postClause = str(postClause)
     finalClause = ""
+    alreadyExistingSubject = data.get("subj")
 
     # Inverse the agent if it is not "one"
     if agent != "one":
@@ -63,6 +58,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
             prepAtStart,
             cltreeAtStart,
             wsubj,
+            alreadyExistingSubject,
             subject,
             auxilary,
             adverbBefore,

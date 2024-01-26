@@ -2,10 +2,10 @@ import spacy
 import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
 import src.archive.sentenceParserOld as analyseSentence
-import src.parsingPOSTagging.sentenceParser as analyseSentenceTest
+import src.analysePassiveConstruction.sentenceParser as analyseSentenceTest
 
 import verbConjugation.verbConjugator as verbConjugator
-import transformation.transformer as transformer
+import src.composition.sentenceComposition as sentencComposition
 
 # Load NLP model
 nlp = spacy.load("en_core_web_lg")
@@ -24,7 +24,7 @@ def passiveToActive(sentence, source):
         analysis_results = analyseSentenceTest.analyseSentence(passiveSentence, source)
         print(f"results: {analysis_results}")
         verbActive = verbConjugator.conjugateVerb(analysis_results)
-        transformedSentence = transformer.transformSentence(
+        transformedSentence = sentencComposition.transformSentence(
             analysis_results, verbActive, preClause, postClause
         )
 

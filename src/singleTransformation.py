@@ -1,5 +1,5 @@
-import passiveToActive
-import evaluation.singleEvaluation as ev
+import passiveToActive as passiveToActive
+import evaluation.evaluation as ev
 
 source = "singleTransformation"
 continueProgramm = "y"

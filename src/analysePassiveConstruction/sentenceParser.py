@@ -2,7 +2,6 @@ import spacy
 import pattern.text.en as en
 
 nlp = spacy.load("en_core_web_lg")
-from spacy.tokens import Token
 
 
 def analyseSentence(sentence, source):
@@ -319,7 +318,7 @@ def analyseSentence(sentence, source):
                                 subtree, atStart, startIndex = get_subtree(head_index)
                                 verbAddition = subtree
 
-                # Check if the word is a part
+                # Check if the word is a participle
                 if word.dep_ == "prt":
                     if word.head.dep_ == "ROOT":
                         subtree, atStart, startIndex = get_subtree(word.i)

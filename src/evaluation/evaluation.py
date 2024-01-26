@@ -18,10 +18,10 @@ def evaluate_sentence_results(
     Output: the similarity score
     """
     print(f"finalTransformedSubclauses: {transformedSubclause}")
-    goldstandard_bert = [goldstandard]
+    # goldstandard_bert = [goldstandard]
     goldstandard = nlp(goldstandard)
-    transformed_bert = [transformedSentence]
-    transformedSubclause_bert = [transformedSubclause]
+    # transformed_bert = [transformedSentence]
+    # transformedSubclause_bert = [transformedSubclause]
     if source == "singleTransformation":
         transformedSubclause = nlp(transformedSubclause)
     else:
@@ -37,10 +37,7 @@ def evaluate_sentence_results(
             break
 
     for token in goldstandard:
-        if token.pos_ == "VERB" and (
-            token.lemma_ == verbLemma
-            or token.lemma_ == "fulfill"  # due to differences between BE and AE
-        ):
+        if token.pos_ == "VERB" and (token.lemma_ == verbLemma):
             print("token lemma:  goldstandard")
             print(token.lemma_)
             subclauseGoldstandard = token.subtree
@@ -61,16 +58,20 @@ def evaluate_sentence_results(
     print(f"subclauseGoldstandard: {subclauseGoldstandard}")
     print(f"transformedSubclauses: {transformedSubclause}")
 
-    # SBERT
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    if subclauseGoldstandard == None:
-        subclauseGoldstandard = goldstandard.text
-
     transformedSubclause = (
         transformedSubclause.text
         if isinstance(transformedSubclause, spacy.tokens.doc.Doc)
         else transformedSubclause
     )
+
+    # if lenSubclauseGoldstandard > lenTransformedSubclause:
+    # If no subclause has been identified, the whole sentences are compared instead of the subclauses
+    if subclauseGoldstandard == None or len(subclauseGoldstandard) == 0:
+        subclauseGoldstandard = goldstandard.text
+        transformedSubclause = transformedSentence
+
+    # SBERT
+    model = SentenceTransformer("all-MiniLM-L6-v2")
     # Berechnen der Einbettungen (Embeddings)
     embedding1 = model.encode(transformedSubclause, convert_to_tensor=False)
     embedding2 = model.encode(subclauseGoldstandard, convert_to_tensor=False)
@@ -80,33 +81,5 @@ def evaluate_sentence_results(
     SBERT_similarity = SBERT_similarity.item()
 
     print("SBERT Score:", SBERT_similarity)
-
-    try:
-        # Calculate the semantic similarity score between output and goldstandard with BERT/SBERT
-        P, R, F1 = score(
-            [transformedSubclause],
-            [subclauseGoldstandard],
-            lang="en",
-            model_type="bert-base-uncased",
-        )
-        # print(f"BERT: Precision: {P.mean()}, Recall: {R.mean()}, F1-Score: {F1.mean()}")
-
-        BERT_similarity = F1.mean()
-        """
-        # Calculate the dependency similarity score
-        def get_dependency_types(doc):
-            return [(token.head.i, token.i, token.dep_) for token in doc]
-
-        deps1 = get_dependency_types(goldstandard)
-        deps2 = get_dependency_types(transformedSentence)
-
-        similarities = sum(1 for dep1 in deps1 if dep1 in deps2)
-        print(f"Similarities: {similarities}")
-        total_relations = max(len(deps1), len(deps2))
-        print(f"Total relations: {total_relations}")
-        dependency_similarity = similarities / total_relations"""
-    except Exception as e:
-        print(f"An unexpected error occured during the evaluation of the ouput: {e}")
-        raise
 
     return SBERT_similarity
