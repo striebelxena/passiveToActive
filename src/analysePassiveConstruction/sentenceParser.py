@@ -45,12 +45,7 @@ def analyseSentence(sentence, source):
     ccomp = ""
     punc = ""
     wsubjpass = ""
-    found_sent_start = False
-    subclause = ""
-    structure = {}
-    passiveSentences = list()
     usedIndex = []
-    headIds = []
     signIndex = 0
     setenceString = str(sentence)
 

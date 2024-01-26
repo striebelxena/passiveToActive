@@ -1,7 +1,8 @@
 import spacy
 import pattern_patch
 import checkForPassive.passiveCheck as passiveCheck
-import src.archive.sentenceParserOld as analyseSentence
+
+i  # mport src.archive.sentenceParserOld as analyseSentence
 import src.analysePassiveConstruction.sentenceParser as analyseSentenceTest
 
 import verbConjugation.verbConjugator as verbConjugator

@@ -26,6 +26,17 @@ For installing and running this project please proceed like this using conda:
 
 git clone https://github.com/striebelxena/passiveToActive.git
 cd passiveToActive
+conda create --name pta python=3.11
+conda activate pta
+
+pip install spacy
+pip install pattern
+python -m spacy download en_core_web_lg
+pip install langdetect
+pip install pandas
+
+
+
 pip install -r requirements.txt
 
 cd scr
@@ -57,10 +68,10 @@ There are two options how the algorithm can be used:
 
 1. **Transformation of only one sentence:**
    1. Run singleTransformation.py (Starting the code usually takes some time)
-   1. Insert one sentence via the terminal
-   1. Output: transformed sentence
-   1. State whether you want to compare the output to a expected result
-   1. If yes, insert your reference sentence
+   2. Insert one sentence via the terminal
+   3. Output: transformed sentence
+   4. State whether you want to compare the output to a expected result
+   5. If yes, insert your reference sentence
 2. **Transformation of several sentences at once:**
    1. Prepare a csv-file with the following characteristics:
       * One column called “InputSentence” with
@@ -72,23 +83,19 @@ There are two options how the algorithm can be used:
         * "ReferenceSentence", which
           inherits the expected output, i.e. the active sentence and another column called
         * "Mode", which inherits whether the InputSentence is indeed passive or active
-   1. Run fileTransformation.py
-   1. State whether you want to evaluate the output
-   1. Output: The transformed sentences and, if evaluated, their semantic similarity score is saved to an new csv-file which per default will be created in the folder "data"
-
+   2. Run fileTransformation.py
+   3. State whether you want to evaluate the output
+   4. Output: The transformed sentences and, if evaluated, their semantic similarity score is saved to an new csv-file which per default will be created in the folder "data"
 
 # Assumptions:
 
 The whole data pipeline depends on the accuracy and correctness of the parser.
 
-
 # Evaluation:
 
-The evaluation of the transformed sentences is done by comparing the semantic similarity of the generated output sentences with the expected one by applying the SBERT function. Herein, the cosine semantic similarity is calculated and returned. 
+The evaluation of the transformed sentences is done by comparing the semantic similarity of the generated output sentences with the expected one by applying the SBERT function. Herein, the cosine semantic similarity is calculated and returned.
 
 # Limitations & Outlook:
-
-
 
 Project Organization
 --------------------

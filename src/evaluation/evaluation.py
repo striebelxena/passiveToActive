@@ -1,6 +1,8 @@
 import spacy
-import pandas as pd
-from bert_score import score
+
+# import pandas as pd
+
+# from bert_score import score
 from sentence_transformers import SentenceTransformer, util
 
 nlp = spacy.load("en_core_web_lg")

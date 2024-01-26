@@ -32,7 +32,7 @@ extensions = []
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+"""source_suffix = ".rst"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -248,3 +248,4 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 # texinfo_show_urls = 'footnote'
+"""

@@ -37,11 +37,9 @@ def transformSentence(data, finalVerb, preClause, postClause):
     wsubj = data.get("wsubjpass")
     mark = data.get("mark")
     mark = " ".join(mark)
-    punc = data.get("punc")
     preClause = str(preClause)
     postClause = str(postClause)
     finalClause = ""
-    alreadyExistingSubject = data.get("subj")
 
     # Inverse the agent if it is not "one"
     if agent != "one":
@@ -58,7 +56,7 @@ def transformSentence(data, finalVerb, preClause, postClause):
             prepAtStart,
             cltreeAtStart,
             wsubj,
-            alreadyExistingSubject,
+            # alreadyExistingSubject,
             subject,
             auxilary,
             adverbBefore,
