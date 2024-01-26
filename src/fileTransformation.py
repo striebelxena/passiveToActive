@@ -25,8 +25,8 @@ parent_dir = base_dir.parent
 
 
 # Input file and output file, which can be adapted as required
-input_file_name = "Goldstandard_updated.xlsx"
-output_file_name = "FinalEvaluation.xlsx"
+input_file_name = "goldstandard_rafi_v3.xlsx"
+output_file_name = "Rafi_v3_Evaluation.xlsx"
 
 # Create paths relative to the base directory
 input_file = parent_dir / "data" / input_file_name

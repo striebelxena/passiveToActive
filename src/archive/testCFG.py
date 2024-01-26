@@ -1,6 +1,6 @@
-import nltk
+"""import nltk
 from nltk import CFG
-from nltk.parse import ChartParser
+from nltk.parse import ChartParser"""
 
 grammar = CFG.fromstring(
     """

@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer, util
+"""from sentence_transformers import SentenceTransformer, util"""
 
 # Laden des SBERT-Modells
 model = SentenceTransformer("all-MiniLM-L6-v2")

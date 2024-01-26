@@ -1,10 +1,8 @@
-import stanza
+"""import stanza
 import logging
-from collections import deque
-from graphviz import Digraph
 import nltk
 from nltk import CFG
-import nltk
+import nltk"""
 
 # Deaktivating of the Stanza-logs otherwise too much unnecessary output is generated
 logging.getLogger("stanza").setLevel(logging.WARNING)
@@ -86,21 +84,6 @@ def pattern1(parsed_tree):
 active_sentence = pattern1(trees[0])
 print("active_sentence")
 print(active_sentence)
-
-
-"""for node in node.children:
-
-    if len(node.children) == 1:  
-     # Überprüft, ob es sich um einen Blattknoten handelt
-        # Direktes Kind des aktuellen Knotens ist das Wort
-        for  word in node.children:
-            #word = node.children[0]
-            print(f"Word: {word.label}, POS: {node.label}")
-    else:
-        # Für nicht-Blattknoten
-        for child in node.children:
-            traverse_constituency_tree(child)
-            print(f"Phrase: {node.label}")"""
 
 
 print("tree")

@@ -1,23 +1,21 @@
-
-import nltk
+"""import nltk
 from nltk import CFG
-import nltk
-#import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
+import nltk"""
+# import parsingPOSTagging.sentenceParserTest as analyseSentenceTest
 
 
-
-nltk.download('punkt')  # Download the necessary datasets
+nltk.download("punkt")  # Download the necessary datasets
 
 
 sentence = "The quick brown fox jumps over the lazy dog."
 tokens = nltk.word_tokenize(sentence)
 print(tokens)
-nltk.download('averaged_perceptron_tagger')  # Download the POS tagger
+nltk.download("averaged_perceptron_tagger")  # Download the POS tagger
 
 pos_tags = nltk.pos_tag(tokens)
 print("POS Tags:", pos_tags)
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
+nltk.download("maxent_ne_chunker")
+nltk.download("words")
 
 ner_tree = nltk.ne_chunk(pos_tags)
 print("NER Tree:", ner_tree)
@@ -95,10 +93,11 @@ def transformSentence(data, finalVerb, preClause, postClause):
 
     #components = [mark, adverbStart, prepAtStart, cltreeAtStart, wsubj, subject, auxilary, adverbBefore, verb, part, object, verbAddition, adverbAfter, cltree, prep, xcomp, cconj, ccomp, conj]
     """
-    
+
 VP1 = "V V PP"
 
-grammar1 = CFG.fromstring(f"""
+grammar1 = CFG.fromstring(
+    f"""
         S -> NP VP
         NP -> Det N
         VP -> V NP | VP PP | {VP1} 
@@ -107,9 +106,11 @@ grammar1 = CFG.fromstring(f"""
         N -> '{object}' | 'subject'
         V -> 'verb' | 'auxilary'
         P -> 'by'
-    """)
+    """
+)
 
-grammar2 = CFG.fromstring(f"""
+grammar2 = CFG.fromstring(
+    f"""
         S -> NP VP
         NP -> Det N | N | PRP | NNP |NP PP| Det NNP
         VP ->  MD VP | V | VB VP | VBN PP | V NP NP PP | V NP PP PP | V NP NP PP PP | V NP NP NP | V NP NP NP PP | V NP NP NP NP | V NP NP NP NP PP | V NP NP NP NP NP | V NP NP NP NP NP PP | V NP NP NP NP NP NP | V NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP NP PP | V NP NP N
@@ -121,8 +122,10 @@ grammar2 = CFG.fromstring(f"""
         VBN ->
         IN -> 
         NP ->      
-    """)
-grammar3 = CFG.fromstring(f"""
+    """
+)
+grammar3 = CFG.fromstring(
+    f"""
         S -> NP VP
         NP -> Det N
         VP -> V NP | VP PP | {VP1} | MD VP | V | V NP PP | V NP NP | V NP NP PP | V NP PP PP | V NP NP PP PP | V NP NP NP | V NP NP NP PP | V NP NP NP NP | V NP NP NP NP PP | V NP NP NP NP NP | V NP NP NP NP NP PP | V NP NP NP NP NP NP | V NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP PP | V NP NP NP NP NP NP NP NP NP | V NP NP NP NP NP NP NP NP NP PP | V NP NP N
@@ -131,7 +134,8 @@ grammar3 = CFG.fromstring(f"""
         N -> '{object}' | 'subject'
         V -> 'verb' | 'auxilary'
         P -> 'by'
-    """)
+    """
+)
 
 parser = nltk.ChartParser(grammar2)
 sentence = "It shall be convened by the President of the Bundestag.".split()
@@ -147,18 +151,20 @@ print("Schleife")
 if not trees:
     print("No valid parse trees.")
 else:
-        for tree in trees:
-            print(tree)
+    for tree in trees:
+        print(tree)
+
 
 def pattern1(parsed_tree):
-        # This is a simplified logic, actual implementation might need to handle more cases
-            subject = parsed_tree[1][2][1][0] # Assuming 'John'
-            verb = "threw"  # getting it from pattern
-            obj = f'{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}' # Assuming 'the ball'
+    # This is a simplified logic, actual implementation might need to handle more cases
+    subject = parsed_tree[1][2][1][0]  # Assuming 'John'
+    verb = "threw"  # getting it from pattern
+    obj = f"{parsed_tree[0][0][0]} {parsed_tree[0][1][0]}"  # Assuming 'the ball'
 
-            return f"{subject} {verb} {obj}"
+    return f"{subject} {verb} {obj}"
 
-    # Assuming 'trees[0]' is the correct parse tree
+
+# Assuming 'trees[0]' is the correct parse tree
 active_sentence = pattern1(trees[0])
 print("active_sentence")
 print(active_sentence)

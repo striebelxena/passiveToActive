@@ -1,7 +1,7 @@
 passiveToActive-with-NLP
 ========================
 
-This is a ruled-based approach to converse regulatory passive sentences to active sentences. The data pipeline uses SpaCy to perform NLP tasks like tokenization, POS Tagging, Dependency Parsing. The result is checked for passive constructions and then based on the morphological and syntax characteristics the transformation from passive to active is performed. Finally, the conversed sentence is returned. If there is no agent provided, the algorithm uses "one" as default subject for the active sentence.
+This is a ruled-based approach to convert regulatory passive sentences to active sentences. The data pipeline uses SpaCy to perform NLP tasks like tokenization, POS Tagging, Dependency Parsing. The result is checked for passive constructions and then based on the morphological and syntax characteristics the transformation from passive to active is performed. Finally, the converted sentence is returned. If there is no agent provided, the algorithm uses "one" as default subject for the active sentence.
 
 Author: Xena Striebel
 
@@ -19,12 +19,17 @@ Instructor: Catherine Sai
 
 ## **Installation**
 
-For installing and running this project please proceed like this:
+For installing and running this project please proceed like this using conda:
 
 ```python
+
+
 git clone https://github.com/striebelxena/passiveToActive.git
 cd passiveToActive
 pip install -r requirements.txt
+
+cd scr
+ conda install -c conda-forge pattern.
 ```
 
 Implementation Pipeline:

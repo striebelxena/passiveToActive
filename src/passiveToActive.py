@@ -8,7 +8,11 @@ from langdetect import detect
 
 
 # Load NLP model
-nlp = spacy.load("en_core_web_lg")
+try:
+    nlp = spacy.load("en_core_web_lg")
+except Exception as e:
+    spacy.cli.download("en_core_web_lg")
+    nlp = spacy.load("en_core_web_lg")
 
 
 # Main Transformation Function

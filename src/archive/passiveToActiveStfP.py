@@ -1,5 +1,5 @@
-import os
-from nltk.parse.stanford import StanfordParser
+"""import os
+from nltk.parse.stanford import StanfordParser"""
 
 
 import spacy
