@@ -11,18 +11,64 @@ Instructor: Catherine Sai
 
 ---
 
-# Main dependencies:
-
-- Python 3.11
-- SpaCy
-- pattern
-
 ## **Installation**
 
-For installing and running this project please proceed like this using conda:
+For installing and running this project please use conda and proceed like this:
 
-```python
+Clone the repository:
 
+```
+git clone https://github.com/striebelxena/passiveToActive.git
+
+```
+
+Navigate to the project directory:
+
+```
+cd passiveToActive
+```
+
+Create a new Conda environment:
+
+```
+conda create --name pta python=3.11
+```
+
+Activate the Conda environment:
+
+```
+conda activate pta
+```
+
+Install required packages:
+
+```
+pip install -r requirements.txt
+```
+
+If there occurs an error during the installation of pattern, please try this command:
+
+```
+conda install -c conda-forge pattern.
+```
+
+To being able to run the algorithm navigate to the source folder:
+
+```
+cd src
+```
+
+To finally run the algorithm for one sentence use this command:
+
+```
+python singleTransformation.py
+```
+
+To finally run the algorithm for a xlsx-file of sentences use this command:
+
+```
+python fileTransformation.py
+```
 
 git clone https://github.com/striebelxena/passiveToActive.git
 cd passiveToActive
@@ -34,14 +80,12 @@ pip install pattern
 python -m spacy download en_core_web_lg
 pip install langdetect
 pip install pandas
-
-
+pip install openpyxl
 
 pip install -r requirements.txt
 
 cd scr
  conda install -c conda-forge pattern.
-```
 
 Implementation Pipeline:
 ------------------------

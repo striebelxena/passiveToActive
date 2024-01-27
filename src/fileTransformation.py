@@ -173,9 +173,10 @@ try:
     # Order of the columns in the output file
     new_column_order = [
         "InputSentence",
-        "ReferenceSentence",
         "TransformedActiveSentence",
-    ] + [col for col in df.columns if col in ["SemanticSimilarity"]]
+    ] + [
+        col for col in df.columns if col in ["ReferenceSentence", "SemanticSimilarity"]
+    ]
 
     df = df[new_column_order]
 
@@ -184,24 +185,27 @@ try:
     FalseNegatives = FalseNegativesWronglyIdentified + FalseNegativesWronglyTransformed
 
     print("Transformation done.")
-    print(
-        f"Number of sentences transformed: {CorrectlyIdentifiedAsPassive+FalsePositives}"
-    )
-    print(f"TrueNegatives: {TrueNegatives}")
-    print(f"TruePositives: {TruePositives}")
-    print(f"FalsePositives: {FalsePositives}")
-    print(f"FalseNegativesWronglyIdentified: {FalseNegativesWronglyIdentified}")
-    print(f"FalseNegativesWronglyTransformed: {FalseNegativesWronglyTransformed}")
-    print(f"Number of sentences correctly transformed: {TruePositives}")
-    print(f"Number of sentences incorrectly transformed: {FalseNegatives}")
+    if evaluation == "y":
+        print(
+            f"Number of sentences transformed: {CorrectlyIdentifiedAsPassive+FalsePositives}"
+        )
+        print(f"TrueNegatives: {TrueNegatives}")
+        print(f"TruePositives: {TruePositives}")
+        print(f"FalsePositives: {FalsePositives}")
+        print(f"FalseNegativesWronglyIdentified: {FalseNegativesWronglyIdentified}")
+        print(f"FalseNegativesWronglyTransformed: {FalseNegativesWronglyTransformed}")
+        print(f"Number of sentences correctly transformed: {TruePositives}")
+        print(f"Number of sentences incorrectly transformed: {FalseNegatives}")
 
-    if (TruePositives + FalsePositives) != 0 and (TruePositives + FalseNegatives) != 0:
-        recall = TruePositives / (TruePositives + FalseNegatives)
-        print(f"Recall: {recall}")
-        precision = TruePositives / (TruePositives + FalsePositives)
-        print(f"Precision: {precision}")
-        f1_score = 2 * ((precision * recall) / (precision + recall))
-        print(f"F1-Score: {f1_score}")
+        if (TruePositives + FalsePositives) != 0 and (
+            TruePositives + FalseNegatives
+        ) != 0:
+            recall = TruePositives / (TruePositives + FalseNegatives)
+            print(f"Recall: {recall}")
+            precision = TruePositives / (TruePositives + FalsePositives)
+            print(f"Precision: {precision}")
+            f1_score = 2 * ((precision * recall) / (precision + recall))
+            print(f"F1-Score: {f1_score}")
 
 except Exception as e:
     print(f"An unexpected error occured during the evaluation of the ouput: {e}")
