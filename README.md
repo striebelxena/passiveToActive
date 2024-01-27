@@ -44,6 +44,7 @@ Install required packages:
 
 ```
 pip install -r requirements.txt
+python -m spacy download en_core_web_lg 
 ```
 
 If there occurs an error during the installation of pattern, please try this command:
