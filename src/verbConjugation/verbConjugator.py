@@ -1,4 +1,4 @@
-import pattern_patch
+# import pattern_patch
 import pattern.text.en as pat
 import spacy
 

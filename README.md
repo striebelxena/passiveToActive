@@ -1,5 +1,4 @@
-passiveToActive-with-NLP
-========================
+# passiveToActive-with-NLP
 
 This is a ruled-based approach to convert regulatory passive sentences to active sentences. The data pipeline uses SpaCy to perform NLP tasks like tokenization, POS Tagging, Dependency Parsing. The result is checked for passive constructions and then based on the morphological and syntax characteristics the transformation from passive to active is performed. Finally, the converted sentence is returned. If there is no agent provided, the algorithm uses "one" as default subject for the active sentence.
 
@@ -19,7 +18,6 @@ Clone the repository:
 
 ```
 git clone https://github.com/striebelxena/passiveToActive.git
-
 ```
 
 Navigate to the project directory:
@@ -71,23 +69,6 @@ To finally run the algorithm for a xlsx-file of sentences use this command:
 python fileTransformation.py
 ```
 
-git clone https://github.com/striebelxena/passiveToActive.git
-cd passiveToActive
-conda create --name pta python=3.11
-conda activate pta
-
-pip install spacy
-pip install pattern
-python -m spacy download en_core_web_lg
-pip install langdetect
-pip install pandas
-pip install openpyxl
-
-pip install -r requirements.txt
-
-cd scr
- conda install -c conda-forge pattern.
-
 Implementation Pipeline:
 ------------------------
 
@@ -132,35 +113,32 @@ There are two options how the algorithm can be used:
    3. State whether you want to evaluate the output
    4. Output: The transformed sentences and, if evaluated, their semantic similarity score is saved to an new csv-file which per default will be created in the folder "data"
 
-# Assumptions:
+## Assumptions:
 
 The whole data pipeline depends on the accuracy and correctness of the parser.
 
-# Evaluation:
+## Evaluation:
 
 The evaluation of the transformed sentences is done by comparing the semantic similarity of the generated output sentences with the expected one by applying the SBERT function. Herein, the cosine semantic similarity is calculated and returned.
 
-# Limitations & Outlook:
+## Limitations & Outlook:
 
 Project Organization
 --------------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like`make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
+
+    ├── README.md          <- The top-level README for all instructions and information
     ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
+    │   ├──  goldstandard      <- All goldstandard related data
+    │   ├── final evaluation       <- Final docu
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── documents              <- Folder with report, presentation, final human evaluation dat
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
+    ├── src          <- main directory including th
     │
     ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
     │
@@ -168,7 +146,7 @@ Project Organization
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
+    │                         generated with`pip freeze > requirements.txt`
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     ├── src                <- Source code for use in this project.
