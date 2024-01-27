@@ -2,7 +2,12 @@ import pattern_patch
 import pattern.text.en as pat
 import spacy
 
-nlp = spacy.load("en_core_web_lg", exclude=["morphologizer", "ner"])
+# Load NLP model
+try:
+    nlp = spacy.load("en_core_web_lg")
+except Exception as e:
+    spacy.cli.download("en_core_web_lg")
+    nlp = spacy.load("en_core_web_lg")
 
 
 #  verb conjugation

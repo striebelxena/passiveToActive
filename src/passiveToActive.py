@@ -102,13 +102,17 @@ def passiveToActive(sentence, source):
                 raise
 
     try:
-        # Sort the active sentences by the difference between the start and end index, so that the shortest sentence is first and can be inserted into the longest so the main sentence
+        # Sort the active sentences by the difference between the start and end index, so that the longest sentence is first and the shorter ones can be inserted into the longest (i.e. so the main sentence)
         def calc_diff(key):
             start, end = key.split(",")
             return int(end) - int(start)
 
         activeSentsSorted = dict(
-            sorted(activeSentences.items(), key=lambda item: calc_diff(item[0]))
+            sorted(
+                activeSentences.items(),
+                key=lambda item: calc_diff(item[0]),
+                reverse=True,
+            )
         )
         print("Sorted Active Sentences: ")
         print(activeSentsSorted)
@@ -117,6 +121,10 @@ def passiveToActive(sentence, source):
         print(activeSubclauses)
         # Combine the active sentences into one sentence using the indices
         indices_list = list(activeSentsSorted.keys())
+        print("indices list: ")
+        print(indices_list)
+        print(len(indices_list))
+
         if len(indices_list) == 1:
             # If there is only one sentence, print and return it
             transformedSentence = activeSentsSorted[indices_list[0]] + ". "
@@ -125,15 +133,17 @@ def passiveToActive(sentence, source):
             print("\n")
             return transformedSentence, activeSubclauses
 
+        first_indices = indices_list[0]
         last_indices = indices_list[-1]
 
-        # Get last and longest sentence, to insert other shorter subsentences into
-        last_sentence = " ".join(activeSentsSorted[last_indices].split())
+        # Get first and longest sentence, to insert other shorter subsentences into
+        longest_sentence = " ".join(activeSentsSorted[first_indices].split())
+        final_sentence = longest_sentence
 
         for current_indices in indices_list:
             # iterate through all the produced active sentences
-            if current_indices == last_indices:
-                break
+            if current_indices == first_indices:
+                continue
 
             # Get the start and end index of the current sentence
             start_index, end_index = map(int, current_indices.split(","))
@@ -153,8 +163,17 @@ def passiveToActive(sentence, source):
             print(activeSentsSorted[current_indices])
 
             newSubclause = current_sentence[start_index : end_index + 1]
-            newSubclause = [token.text for token in newSubclause]
-            newSubclause = " ".join(newSubclause).strip()
+            # newSubclause = [token.text for token in newSubclause]
+            newSubclause = "".join(
+                token.text + " "
+                if token.text == ","
+                else token.text_with_ws
+                if not token.is_punct
+                else token.text
+                for token in newSubclause
+            )
+            if newSubclause.endswith(", "):
+                newSubclause = newSubclause[:-2]
 
             print("current_indices")
             print("start_index: ", start_index)
@@ -164,18 +183,19 @@ def passiveToActive(sentence, source):
             print(newSubclause)
 
             # Replace the subclause with the passive construction in the original sentence with the new active subclause
-            position = last_sentence.find(oldSubclause)
+            position = longest_sentence.find(oldSubclause)
             if position != -1:
                 # If the subclause is found in the original sentence, replace it with the new active subclause
-                modified_last_sentence = (
-                    last_sentence[:position]
+
+                modified_longest_sentence = (
+                    longest_sentence[:position]
                     + newSubclause
-                    + last_sentence[position + len(oldSubclause) :]
+                    + longest_sentence[position + len(oldSubclause) :]
                 )
-                print("modified last sentence: ")
-                print(modified_last_sentence)
-                last_sentence = modified_last_sentence
-            final_sentence = last_sentence
+                print("modified longest sentence: ")
+                print(modified_longest_sentence)
+                longest_sentence = modified_longest_sentence
+            final_sentence = longest_sentence
 
         final_sentence = final_sentence + ". "
 
