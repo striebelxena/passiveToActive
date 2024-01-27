@@ -19,7 +19,7 @@ FalseNegativesWronglyTransformed = 0
 numbOfActiveSentences = 0
 semanticSimilarity = 0
 
-# Base directory as Path object (e.g. the directory of the script)
+"""# Base directory as Path object (e.g. the directory of the script)
 base_dir = Path(__file__).parent
 parent_dir = base_dir.parent
 
@@ -30,7 +30,20 @@ output_file_name = "Rafi_v3_Evaluation.xlsx"
 
 # Create paths relative to the base directory
 input_file = parent_dir / "data" / input_file_name
-output_file = parent_dir / "data" / "tests" / output_file_name
+output_file = parent_dir / "data" / "tests" / output_file_name"""
+
+# Ask the user for the input file path
+input_file_path = input(
+    "Please enter a valid path to the input file including the file name and extension (e.g., /path/to/InputFile.xlsx):\n "
+)
+output_file_path = input(
+    "Please enter a valid path where the output file should be generated and saved including the file name and extension (e.g., /path/to/OutputFile.xlsx):\n "
+)
+
+# Convert the input paths to Path objects
+input_file = Path(input_file_path)
+output_file = Path(output_file_path)
+
 
 try:
     # Load the Excel input file with the sentences to be transformed
@@ -162,14 +175,7 @@ try:
         "InputSentence",
         "ReferenceSentence",
         "TransformedActiveSentence",
-        "SemanticSimilarity",
-    ]
-    """+ [
-        col
-        for col in df.columns
-        if col
-        not in ["InputSentence", "ReferenceSentence", "TransformedActiveSentence"]
-    ]"""
+    ] + [col for col in df.columns if col in ["SemanticSimilarity"]]
 
     df = df[new_column_order]
 
