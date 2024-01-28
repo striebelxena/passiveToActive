@@ -38,18 +38,20 @@ Activate the Conda environment:
 conda activate pta
 ```
 
-Install required packages:
+Install pattern:
+
+```
+conda install -c conda-forge pattern
+```
+
+Install required packages and language model:
 
 ```
 pip install -r requirements.txt
 python -m spacy download en_core_web_lg 
 ```
 
-If there occurs an error during the installation of pattern, please try this command:
 
-```
-conda install -c conda-forge pattern
-```
 
 To being able to run the algorithm navigate to the source folder:
 
@@ -100,7 +102,7 @@ There are two options how the algorithm can be used:
    5. If yes, insert your reference sentence
 2. **Transformation of several sentences at once:**
    1. Prepare a xlsx-file with the following characteristics:
-      * One column called “InputSentence” with the sentences which should be converted, one in each row 
+      * One column called “InputSentence” with the sentences which should be converted, one in each row
       * If the output should be evaluated based on the ability of the algorithm to identify passive sentences and to transform them, the file needs a column called
         * "ReferenceSentence", which
           inherits the expected output, i.e. the active sentence and another column called
@@ -154,12 +156,9 @@ Also an human evaluation was done, which resulted in an accuracy of 93.75%.
 
 * Struggles sometimes with sentences containing multiple passive constructions, leading to complexity in parsing and handling components.
 * Difficulty in correctly transforming complex or rare sentence constructions.
-
 * Issues with SpaCy's dependency parsing.
 * SBERT-Score inconsistencies, even with grammatically and semantically correct transformations, due to word order differences or parsing ambiguities.
-
 * Parsing issues with symbolics or punctuation using SpaCy.
-
 
 **Further Improvements:**
 

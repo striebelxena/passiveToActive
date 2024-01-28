@@ -3,9 +3,16 @@ import pandas as pd
 import passiveToActive as pta
 import spacy
 import evaluation.evaluation as ev
+from tqdm import tqdm
+import questionary
+from rich.console import Console
+from rich.table import Table
+from rich import print as rprint
 
+console = Console()
 
 nlp = spacy.load("en_core_web_lg")
+
 
 source = "fileTransformation"
 # Metrics for the evaluation
@@ -19,19 +26,21 @@ FalseNegativesWronglyTransformed = 0
 numbOfActiveSentences = 0
 semanticSimilarity = 0
 
+try:
+    # Ask the user for the input file path
+    input_file_path = questionary.path(
+        "\nPlease enter a valid path to the input file including the file name and extension (e.g., /path/to/InputFile.xlsx):\n "
+    ).ask()
+    output_file_path = questionary.path(
+        "\nPlease enter a valid path where the output file should be generated and saved including the file name and extension (e.g., /path/to/OutputFile.xlsx):\n "
+    ).ask()
 
-# Ask the user for the input file path
-input_file_path = input(
-    "Please enter a valid path to the input file including the file name and extension (e.g., /path/to/InputFile.xlsx):\n "
-)
-output_file_path = input(
-    "Please enter a valid path where the output file should be generated and saved including the file name and extension (e.g., /path/to/OutputFile.xlsx):\n "
-)
-
-# Convert the input paths to Path objects
-input_file = Path(input_file_path)
-output_file = Path(output_file_path)
-
+    # Convert the input paths to Path objects
+    input_file = Path(input_file_path)
+    output_file = Path(output_file_path)
+except Exception as e:
+    console.print(f"[bold red]An unexpected error occurred: {e}[/bold red]")
+    raise
 
 try:
     # Load the Excel input file with the sentences to be transformed
@@ -44,10 +53,17 @@ try:
     # Convert the sentences and save the output in a new column called "TransformedActiveSentence"
 
     df["TransformedActiveSentence"], df["TransformedSubclauses"] = zip(
-        *df["InputSentence"].apply(
-            lambda s: pta.passiveToActive(s, source) if isinstance(s, str) else (s, "-")
+        *tqdm(
+            df["InputSentence"].apply(
+                lambda s: pta.passiveToActive(s, source)
+                if isinstance(s, str)
+                else (s, "-")
+            ),
+            total=df.shape[0],
+            desc="Processing Sentences",
         )
     )
+
     # replace empty strings with a default value
     df["TransformedSubclauses"] = df["TransformedSubclauses"].apply(
         lambda x: {"000": "-"} if x is None or x == "" else x
@@ -138,14 +154,22 @@ try:
             raise
 
     # Ask user if s/he wants to evaluate the results
-    evaluation = input("\n\nEvaluate Results? (y/n)\n\n")
+    evaluation = questionary.confirm("\n\nEvaluate Results? (y/n)\n\n").ask()
 
     # Check if the input file has a column named "ReferenceSentence", otherwise evaluation is not possible
     if "ReferenceSentence" not in df.columns:
         raise ValueError("File needs to have a column named 'ReferenceSentence'.")
 
-    if evaluation == "y":
-        df["SemanticSimilarity"] = df.apply(calculate_similarity, axis=1)
+    if evaluation:
+        # Using tqdm to show progress for the SemanticSimilarity calculation
+        similarities = []
+        for index, row in tqdm(
+            df.iterrows(), total=df.shape[0], desc="Calculating Semantic Similarity"
+        ):
+            similarity = calculate_similarity(row)
+            similarities.append(similarity)
+
+        df["SemanticSimilarity"] = similarities
         df.apply(calculate_metrics, axis=1)
 
     # Order of the columns in the output file
@@ -161,28 +185,39 @@ try:
     df.to_excel(output_file, index=False)
 
     FalseNegatives = FalseNegativesWronglyIdentified + FalseNegativesWronglyTransformed
-
-    print("Transformation done.")
-    if evaluation == "y":
-        print(
-            f"Number of sentences transformed: {CorrectlyIdentifiedAsPassive+FalsePositives}"
+    if (TruePositives + FalsePositives) != 0 and (TruePositives + FalseNegatives) != 0:
+        recall = TruePositives / (TruePositives + FalseNegatives)
+        precision = TruePositives / (TruePositives + FalsePositives)
+        f1_score = 2 * ((precision * recall) / (precision + recall))
+    rprint("\n[bold green]Transformation done.[/bold green]")
+    if evaluation:
+        table = Table(show_header=True, header_style="bold white")
+        table.add_column("Metric", style="dim")
+        table.add_column("Value", justify="right")
+        table.add_row(
+            "Number of sentences transformed",
+            str(CorrectlyIdentifiedAsPassive + FalsePositives),
         )
-        print(f"TrueNegatives: {TrueNegatives}")
-        print(f"TruePositives: {TruePositives}")
-        print(f"FalsePositives: {FalsePositives}")
-        print(f"FalseNegativesWronglyIdentified: {FalseNegativesWronglyIdentified}")
-        print(f"FalseNegativesWronglyTransformed: {FalseNegativesWronglyTransformed}")
+        table.add_row("True Negatives", str(TrueNegatives))
+        table.add_row("True Positives", str(TruePositives))
+        table.add_row("False Positives", str(FalsePositives))
+        table.add_row("False Negatives", str(FalseNegatives))
+        table.add_row(
+            "False Negatives Wrongly Identified", str(FalseNegativesWronglyIdentified)
+        )
+        table.add_row(
+            "False Negatives Wrongly Transformed", str(FalseNegativesWronglyTransformed)
+        )
+        table.add_row("Recall", str(recall))
+        table.add_row("Precision", str(precision))
 
-        if (TruePositives + FalsePositives) != 0 and (
-            TruePositives + FalseNegatives
-        ) != 0:
-            recall = TruePositives / (TruePositives + FalseNegatives)
-            print(f"\n Recall: {recall}")
-            precision = TruePositives / (TruePositives + FalsePositives)
-            print(f"\n Precision: {precision}")
-            f1_score = 2 * ((precision * recall) / (precision + recall))
-            print(f"\n F1-Score: {f1_score}")
+        table.add_row(
+            "F1-Score",
+            str(f1_score),
+        )
+        console.print(table)
+
 
 except Exception as e:
-    print(f"An unexpected error occured during the evaluation of the ouput: {e}")
+    console.print(f"[bold red]An unexpected error occurred: {e}[/bold red]")
     raise

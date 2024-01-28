@@ -55,7 +55,7 @@ def passiveToActive(sentence, source):
     ) = passiveCheck.checkForPassive(doc)
 
     if identifiedPassiveSentences == []:
-        return "\n No passive construction identified", None
+        return "\nNo passive construction identified", None
     else:
         # if passive constructions have been identified to the following steps for each identified passive construction
         for index, sentence in enumerate(identifiedPassiveSentences):
@@ -108,9 +108,10 @@ def passiveToActive(sentence, source):
         if len(indices_list) == 1:
             # If there is only one sentence, print and return it
             transformedSentence = activeSentsSorted[indices_list[0]] + ". "
-            print(f"\nPassive Sentence: {doc}")
-            print(f"\nActive Sentence: {transformedSentence}")
-            print("\n")
+            if source != "fileTransformation":
+                print(f"\nPassive Sentence: {doc}")
+                print(f"\nActive Sentence: {transformedSentence}")
+                print("\n")
             return transformedSentence, activeSubclauses
 
         first_indices = indices_list[0]
@@ -165,9 +166,10 @@ def passiveToActive(sentence, source):
 
         final_sentence = final_sentence + ". "
 
-        print(f"Passive Sentence: {doc}")
-        print(f"Active Sentence: {final_sentence}")
-        print("\n")
+        if source != "fileTransformation":
+            print(f"Passive Sentence: {doc}")
+            print(f"Active Sentence: {final_sentence}")
+            print("\n")
     except Exception as e:
         print(
             f"The following error accured during the final composition of the active sentence: {e}"
