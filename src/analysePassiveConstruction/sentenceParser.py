@@ -66,20 +66,11 @@ def analyseSentence(sentence, source):
                 if span_word.i not in usedIndex:
                     usedIndex.append(span_word.i)
 
-            print(f"subtree_span:{sentence[index].text}")
-            print(subtree_span)
-
             start_index = subtree_span[0].i
-            print("start_index")
-            print(start_index)
 
             end_index = subtree_span[-1].i
-            print("end_index")
-            print(end_index)
 
             max_index = len(sentence) - 1
-            print("max_index")
-            print(max_index)
 
             if end_index + 1 < max_index and sentence[end_index + 1].text in (
                 ",",
@@ -99,9 +90,6 @@ def analyseSentence(sentence, source):
             else:
                 subtree = sentence[start_index : end_index + 1].text
 
-            print("subtree after if")
-            print(subtree)
-
             subtree = subtree.strip()
             if (
                 start_index == 0
@@ -120,11 +108,6 @@ def analyseSentence(sentence, source):
                 )
             ):
                 subtree = subtree[0].lower() + subtree[1:]
-
-            print(f"subtree: {sentence[index].text}")
-            print(subtree)
-            print("usedIndex")
-            print(usedIndex)
 
             atStart = any(word.is_sent_start for word in subtree_span)
 
@@ -162,37 +145,8 @@ def analyseSentence(sentence, source):
         try:
             # Check if the word has already been used/analysed
             if word.i not in usedIndex:
-                if source != "fileTransformation":
-                    print(f"Text: {word.text}")
-                    print(f"Part of Speech: {word.pos_}")  # POS Tagging
-                    print(f"Lemma: {word.lemma_}")  # Lemmatization
-                    print(f"Dependency relation: {word.dep_}")  # Dependency Parsing
-                    print(f"explain: {spacy.explain(word.dep_)}")
-                    print(f"Detailed POS tag: {word.tag_}")
-                    print(f"explain: {spacy.explain(word.tag_)}")
-                    print(f"morph: {word.morph}")
-                    print(f"morph Tense: {word.morph.get('Tense')}")
-                    print(f"morph Number: {word.morph.get('Number')}")
-                    print(f"morph Person: {word.morph.get('Person')}")
-                    print(f"morph Mood: {word.morph.get('Mood')}")
-                    print(f"morph VerbForm: {word.morph.get('VerbForm')}")
-                    print(f"morph Voice: {word.morph.get('Voice')}")
-                    print(f"morph Aspect: {word.morph.get('Aspect')}")
-                    print(f"morph Case: {word.morph.get('Case')}")
-                    print(f"Head: {word.head}")
-                    print(f"Head dep: {word.head.dep_}")
-                    print(f"index: {word.i}")
-                    print(f"ent_type: {word.ent_type_}")
-                    print(word.subtree)
-                    print("Subtree:")
-                    for subtree in word.subtree:
-                        print(subtree)
-                    print("\n")
-
                 # Check if the word is the head of a subclause
                 if word.dep_ in ("acl", "advcl", "relcl"):
-                    print("acl")
-                    print(word)
                     if word.head.dep_ in ("ROOT", "auxpass"):
                         subtree, atStart, startIndex = get_subtree(word.i)
                         if atStart:
@@ -203,8 +157,13 @@ def analyseSentence(sentence, source):
                 # Check if the word is a passive subject or clause
                 if word.dep_ in ("nsubjpass", "csubjpass"):
                     subtree, atStart, startIndex = get_subtree(word.i)
-                    # check if the word is a w-word (who, what, where, when, why, how)
-                    if word.tag_ == "WDT":
+                    # check if the word is a w-word (who, what, where, when, why, how, that)
+                    if (
+                        word.tag_ == "WDT"
+                        or word.tag_ == "WP"
+                        or word.tag_ == "WP$"
+                        or word.text == "that"
+                    ):
                         wsubjpass = subtree
                     # check if the word is a noun assign it appropriately to the variable
                     elif subjpass == "":
@@ -213,7 +172,6 @@ def analyseSentence(sentence, source):
                         signIndex = sentence[startIndex].idx - 1
                         if setenceString[signIndex] != " ":
                             subjpass = subjpass + subtree
-                            print(subjpass)
                         else:
                             subjpass = subjpass + " " + subtree
 
@@ -248,37 +206,40 @@ def analyseSentence(sentence, source):
                 # Check if the word is an auxiliary verb for a passive construction
                 # According to the auxiliary verb, assign the tense, person, mood, aspect and form of the verb
                 if word.dep_ == "auxpass":
-                    # verbForm = word.morph.get("VerbForm")
-                    if sentence[word.i - 1].lemma_ == "have":
-                        verbAspect = en.PARTICIPLE
-                        verbTense = en.PAST
-                        # verbForm = en.PARTICIPLE
-                    if sentence[word.i - 1].lemma_ == "will":
-                        verbTense = en.PRESENT
-                    elif word.tag_ == "VBZ":  # 3rd person singular
-                        verbPerson = en.THIRD
-                        verbTense = en.PRESENT
-                    elif word.tag_ == "VB":
-                        verbTense = (
-                            en.PRESENT
-                        )  # if auxpass is infinitive, the active verb should be present
-                    elif word.tag_ == "VBD":
-                        verbTense = en.PAST
-                    elif word.tag_ == "VBG":
-                        verbTense = en.PRESENT
-                        verbAspect = en.PROGRESSIVE
-                    elif word.tag_ == "VBN":
-                        verbTense = en.PAST
-                    elif word.tag_ == "VBP" or word.tag_ == "VBZ":
-                        verbTense = en.PRESENT
-                    elif word.tag_ == "MD":
-                        verbTense = en.PRESENT
-                    else:
-                        verbTense = en.tenses(word.text)[0][0]
+                    if word.head.dep_ == "ROOT":
+                        # verbForm = word.morph.get("VerbForm")
+                        if sentence[word.i - 1].lemma_ == "have":
+                            verbAspect = en.PARTICIPLE
+                            verbTense = en.PAST
+                            # verbForm = en.PARTICIPLE
+                        if sentence[word.i - 1].lemma_ == "will":
+                            verbTense = en.PRESENT
+                        elif word.tag_ == "VBZ":  # 3rd person singular
+                            verbPerson = en.THIRD
+                            verbTense = en.PRESENT
+                        elif word.tag_ == "VB":
+                            verbTense = (
+                                en.PRESENT
+                            )  # if auxpass is infinitive, the active verb should be present
+                        elif word.tag_ == "VBD":
+                            verbTense = en.PAST
+                        elif word.tag_ == "VBG":
+                            verbTense = en.PRESENT
+                            verbAspect = en.PROGRESSIVE
+                        elif word.tag_ == "VBN":
+                            verbTense = en.PAST
+                        elif word.tag_ == "VBP" or word.tag_ == "VBZ":
+                            verbTense = en.PRESENT
+                        elif word.tag_ == "MD":
+                            verbTense = en.PRESENT
+                        else:
+                            verbTense = en.tenses(word.text)[0][0]
 
                 # Check if the word is a auxiliary verb or negation
                 if word.dep_ in ("aux", "auxpass", "neg"):
-                    if word.head.dep_ in ("ROOT", "relcl", "advcl", "xcomp", "ccomp"):
+                    if word.head.dep_ in (
+                        "ROOT"
+                    ):  # "relcl", "advcl", "xcomp", "ccomp"):
                         if word.dep_ == ("auxpass"):
                             add_index(word.i)
                             aux += [word]
@@ -387,29 +348,6 @@ def analyseSentence(sentence, source):
 
     if aplural:
         aNumber = en.PLURAL
-
-    if source != "fileTransformation":
-        print(f"subjpass: {subjpass}")
-        print(f"subjpass-index: {wsubjpass}")  # index???
-        print(f"subj: {subj}")
-        print(f"verb: {verb}")
-        print(f"verbForm: {verbForm}")
-        print(f"verbTense: {verbTense}")
-        print(f"verbPerson: {verbPerson}")
-        print(f"verbMood: {verbMood}")
-        print(f"adverb: {adverb}")
-        print(f"part: {part}")
-        print(f"prep: {prep}")
-        print(f"agent: {agent}")
-
-        print(f"aplural: {aplural}")
-
-        print(f"cltree: {cltree}")
-        print(f"aux: {aux}")
-        print(f"xcomp: {xcomp}")
-        print(f"punc: {punc}")
-
-        print("\n")
 
     # Create a dictionary with the parts of the sentence
     results = {

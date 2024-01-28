@@ -19,8 +19,6 @@ while continueProgramm == "y":
         transformedSentence, transformedSubclauses = passiveToActive.passiveToActive(
             sentence, source
         )
-        print(f"Transformed sentence: {transformedSentence}")
-        print(f"Transformed subclauses: {transformedSubclauses}")
         # Input with no passive construction identified
         if transformedSentence == "No passive construction identified":
             print(transformedSentence)
@@ -39,22 +37,19 @@ while continueProgramm == "y":
 
             goldstandard = input("\n\nEnter your expected active sentence:\n\n")
             goldstandard = " ".join(goldstandard.split())
-            print(goldstandard)
             # Calculate the semantic similarity score between output and goldstandard with SBERT for every transformed subclause and then calculate the average
             for key, subclause in transformedSubclauses.items():
-                print("key: ", key)
                 semantic_similarity = (
                     semantic_similarity
                     + ev.evaluate_sentence_results(
                         goldstandard, transformedSentence, subclause, source
                     )
                 )
-                print(f"Individual Semantic Similarity: {key}:{semantic_similarity}")
 
                 final_semantic_similarity = semantic_similarity / len(
                     transformedSubclauses
                 )
-            print(f"Semantic Similarity: {final_semantic_similarity}")
+            print(f"\nSemantic Similarity: {final_semantic_similarity}")
 
         else:
             continueProgramm = input("\n\nContinue Programm? (y/n)\n\n")

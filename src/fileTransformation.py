@@ -19,18 +19,6 @@ FalseNegativesWronglyTransformed = 0
 numbOfActiveSentences = 0
 semanticSimilarity = 0
 
-"""# Base directory as Path object (e.g. the directory of the script)
-base_dir = Path(__file__).parent
-parent_dir = base_dir.parent
-
-
-# Input file and output file, which can be adapted as required
-input_file_name = "goldstandard_rafi_v3.xlsx"
-output_file_name = "Rafi_v3_Evaluation.xlsx"
-
-# Create paths relative to the base directory
-input_file = parent_dir / "data" / input_file_name
-output_file = parent_dir / "data" / "tests" / output_file_name"""
 
 # Ask the user for the input file path
 input_file_path = input(
@@ -75,12 +63,7 @@ try:
         transformed = row["TransformedActiveSentence"]
         transformedSubclauses = row["TransformedSubclauses"]
 
-        print(f"transformedSubclauses: {transformedSubclauses}")
-        print(f"transformed: {transformed}")
-        print(f"goldstandard: {goldstandard}")
-
         for subclause in transformedSubclauses.items():
-            print(f"subclause: {subclause}")
             if "000" in subclause:
                 final_semantic_similarity = None
                 continue
@@ -88,14 +71,12 @@ try:
             semantic_similarity += ev.evaluate_sentence_results(
                 goldstandard, transformed, subclause, source
             )
-            print(f"Individual Semantic Similarity:{semantic_similarity}")
 
             final_semantic_similarity = (
                 semantic_similarity / len(transformedSubclauses)
                 if transformedSubclauses
                 else None
             )
-        print(f"Semantic Similarity: {final_semantic_similarity}")
         return final_semantic_similarity
 
     # Calculate the semantic similarity score for each sentence with BERT
@@ -167,9 +148,6 @@ try:
         df["SemanticSimilarity"] = df.apply(calculate_similarity, axis=1)
         df.apply(calculate_metrics, axis=1)
 
-    print("Spalten:")
-    print(df.columns)
-
     # Order of the columns in the output file
     new_column_order = [
         "InputSentence",
@@ -194,18 +172,16 @@ try:
         print(f"FalsePositives: {FalsePositives}")
         print(f"FalseNegativesWronglyIdentified: {FalseNegativesWronglyIdentified}")
         print(f"FalseNegativesWronglyTransformed: {FalseNegativesWronglyTransformed}")
-        print(f"Number of sentences correctly transformed: {TruePositives}")
-        print(f"Number of sentences incorrectly transformed: {FalseNegatives}")
 
         if (TruePositives + FalsePositives) != 0 and (
             TruePositives + FalseNegatives
         ) != 0:
             recall = TruePositives / (TruePositives + FalseNegatives)
-            print(f"Recall: {recall}")
+            print(f"\n Recall: {recall}")
             precision = TruePositives / (TruePositives + FalsePositives)
-            print(f"Precision: {precision}")
+            print(f"\n Precision: {precision}")
             f1_score = 2 * ((precision * recall) / (precision + recall))
-            print(f"F1-Score: {f1_score}")
+            print(f"\n F1-Score: {f1_score}")
 
 except Exception as e:
     print(f"An unexpected error occured during the evaluation of the ouput: {e}")

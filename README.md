@@ -119,9 +119,56 @@ The whole data pipeline depends on the accuracy and correctness of the parser.
 
 ## Evaluation:
 
-The evaluation of the transformed sentences is done by comparing the semantic similarity of the generated output sentences with the expected one by applying the SBERT function. Herein, the cosine semantic similarity is calculated and returned.
+The algorithm is evaluated by considering both the ability to identify
+passive constructions in inserted sentences as well as the correctness of the
+passive-to-active conversion. The evaluation of the transformed sentences is done by comparing the semantic similarity of the generated output sentences with the expected one by applying the SBERT function. Herein, the cosine semantic similarity is calculated and returned.
+
+Overall, precision and recall were defined and used as following:
+
+**True Positive (TP):** correctly identified as passive and
+transformed correctly (SBERT-Score > 0.95)
+
+**False Positive (FP):** wrongly identified as passive and
+attempted to transform
+
+**True Negative (TN):** correctly identified as active and thus not
+transformed
+
+**False Negative (FN):** (wrongly identified as active and
+not transformed) PLUS (correctly identified as passive and transformed wrongly
+(SBERT-Score <= 0.95)
+
+Evaluating the algorithm with the file called "Goldstandard_updated.xlsx, the following results were generated:
+
+| **TP:**        | 150    |
+| :------------------- | :----- |
+| **FP:**        | 0      |
+| **TN:**        | 15     |
+| **FN:**        | 10     |
+| **Precision:** | 1      |
+| **Recall:**    | 0.9375 |
+
+Also an human evaluation was done, which resulted in an accuracy of 93.75%.
 
 ## Limitations & Outlook:
+
+**Limitations of the Algorithm:**
+
+* Struggles sometimes with sentences containing multiple passive constructions, leading to complexity in parsing and handling components.
+* Difficulty in correctly transforming complex or rare sentence constructions.
+
+* Issues with SpaCy's dependency parsing.
+* SBERT-Score inconsistencies, even with grammatically and semantically correct transformations, due to word order differences or parsing ambiguities.
+
+* Parsing issues with symbolics or punctuation using SpaCy.
+
+
+**Further Improvements:**
+
+* Potential enhancements include using CFG or constituency parsing for better analysis, integrating tools for spelling and grammar correction, and employing machine learning models for improved punctuation and sentence composition.
+* Exploring the use of alternative NLP tools like Stanford Parser or NLTK for more precise parsing.
+* The possibility of deriving the agent from context rather than defaulting to "one".
+* The approach is pioneering in transforming complex, long, regulatory sentences with a rule-based algorithm.
 
 Project Organization
 --------------------
@@ -129,35 +176,28 @@ Project Organization
     ├── LICENSE
 
     ├── README.md          <- The top-level README for all instructions and information
-    ├── data
-    │   ├──  goldstandard      <- All goldstandard related data
-    │   ├── final evaluation       <- Final docu
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
+
     │
-    ├── documents              <- Folder with report, presentation, final human evaluation dat
+    ├── documents              <- Folder with report, presentation, final human evaluation
     │
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with`pip freeze > requirements.txt`
+    ├── requirements.txt   <- The requirements file
+    │
     │
     ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
+    │   ├──__init__.py    <- Makes src a Python module
     │   │
-    │   ├── analysePassiveConstruction           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   ├── analysePassiveConstruction           <- function that parses and analyses the identified passive construction
     │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-   
+    │   ├──archive       <- old files, in which other approaches were tried, however code might be not 		executable
+    │   │  
+    │   ├── checkForPassive         <- Function to check and identify passive constructions
+    │   ├── composition               <- function to compose the active sentence
+    │   ├── evaluation                   <- function to evaluate the output sentence
+    │   ├── verbConjugation         <- Function to conjugate the active verb
+    │   ├── fileTransformation       <- Script to transform many sentences at once with an xlsx-file as input
+    │   ├── passiveToActive           <- Main function for transformation
+    │   └── singleTransformation   <- Script to transform one single sentence
 
 ---
 

@@ -20,8 +20,6 @@ def checkForPassive(sentence):
                     if w.dep_ == "auxpass"
                     and (w.i == 0 or sentence[w.i - 1].lower_ != "to")
                 ]
-                print("auxpass_tokens")
-                print(auxpass_tokens)
 
                 if auxpass_tokens:
                     for token in auxpass_tokens:
@@ -32,11 +30,6 @@ def checkForPassive(sentence):
                         preClause.append(sentence[:start_index])
                         postClause.append(sentence[end_index + 1 :])
                         indicesOfSubtrees.append(f"{start_index},{end_index} ")
-                        print("iteration:", token)
-                        print("Passive Clause:", passiveClause)
-                        print("Start Index:", start_index, "End Index:", end_index)
-                        print("Pre Clause:", preClause)
-                        print("Post Clause:", postClause)
 
             except Exception as e:
                 print(

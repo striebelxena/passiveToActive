@@ -66,7 +66,6 @@ def passiveToActive(sentence, source):
                 analysis_results = analyseSentence.analyseSentence(
                     passiveSentence, source
                 )
-                print(f"results: {analysis_results}")
 
                 # conjugate the verb
                 verbActive = verbConjugator.conjugateVerb(analysis_results)
@@ -86,17 +85,6 @@ def passiveToActive(sentence, source):
                 oldSentences[f"{indicesOfSubtrees[index]}"] = sentence.text
                 newLengths[f"{indicesOfSubtrees[index]}"] = newLength
 
-                print("newLengths: ")
-                print(newLengths)
-                print("Old Sentences: ")
-                print(oldSentences)
-                print(indicesOfSubtrees)
-                print("Active Sentences: ")
-                print(activeSentences)
-                print(f"Active Subsentence: {transformedSentence}")
-                print(f"Active Subclause: {activeSubclauses}")
-
-                print("-------------------------------------")
             except Exception as e:
                 print(f"An unexpected error occured during the conversion: {e}")
                 raise
@@ -114,22 +102,14 @@ def passiveToActive(sentence, source):
                 reverse=True,
             )
         )
-        print("Sorted Active Sentences: ")
-        print(activeSentsSorted)
-
-        print("transformed active subclause")
-        print(activeSubclauses)
         # Combine the active sentences into one sentence using the indices
         indices_list = list(activeSentsSorted.keys())
-        print("indices list: ")
-        print(indices_list)
-        print(len(indices_list))
 
         if len(indices_list) == 1:
             # If there is only one sentence, print and return it
             transformedSentence = activeSentsSorted[indices_list[0]] + ". "
-            print(f"Passive Sentence: {doc}")
-            print(f"Active Sentence: {transformedSentence}")
+            print(f"\nPassive Sentence: {doc}")
+            print(f"\nActive Sentence: {transformedSentence}")
             print("\n")
             return transformedSentence, activeSubclauses
 
@@ -157,11 +137,6 @@ def passiveToActive(sentence, source):
             if oldSubclause.endswith("."):
                 oldSubclause = oldSubclause[:-1]
 
-            print("old subclause")
-            print(oldSubclause)
-            print("current sentence: ")
-            print(activeSentsSorted[current_indices])
-
             newSubclause = current_sentence[start_index : end_index + 1]
             # newSubclause = [token.text for token in newSubclause]
             newSubclause = "".join(
@@ -175,13 +150,6 @@ def passiveToActive(sentence, source):
             if newSubclause.endswith(", "):
                 newSubclause = newSubclause[:-2]
 
-            print("current_indices")
-            print("start_index: ", start_index)
-            print("end_index: ", end_index)
-            print(current_indices)
-            print("new clause")
-            print(newSubclause)
-
             # Replace the subclause with the passive construction in the original sentence with the new active subclause
             position = longest_sentence.find(oldSubclause)
             if position != -1:
@@ -192,8 +160,6 @@ def passiveToActive(sentence, source):
                     + newSubclause
                     + longest_sentence[position + len(oldSubclause) :]
                 )
-                print("modified longest sentence: ")
-                print(modified_longest_sentence)
                 longest_sentence = modified_longest_sentence
             final_sentence = longest_sentence
 

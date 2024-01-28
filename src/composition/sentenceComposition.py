@@ -71,8 +71,6 @@ def transformSentence(data, finalVerb, preClause, postClause):
             ccomp,
             conj,
         ]
-        print("initial components:")
-        print(components)
         components = [comp for comp in components if comp]
 
         # Filter out empty components
@@ -88,17 +86,8 @@ def transformSentence(data, finalVerb, preClause, postClause):
         if postClause.endswith("."):
             postClause = postClause[:-1]
 
-        print("final components:")
-        print(final_components)
-        print("preClause")
-        print(preClause)
-        print("postClause")
-        print(postClause)
-
         finalClause = " ".join(final_components).split()
-        print("final clause length")
         newLength = len(finalClause)
-        print(newLength)
 
         finalClause = " ".join(finalClause)
         finalActiveSubclause = finalClause

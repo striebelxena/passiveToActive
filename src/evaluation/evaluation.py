@@ -19,7 +19,6 @@ def evaluate_sentence_results(
     2. Calculate the dependency similarity score
     Output: the similarity score
     """
-    print(f"finalTransformedSubclauses: {transformedSubclause}")
     # goldstandard_bert = [goldstandard]
     goldstandard = nlp(goldstandard)
     # transformed_bert = [transformedSentence]
@@ -28,20 +27,15 @@ def evaluate_sentence_results(
         transformedSubclause = nlp(transformedSubclause)
     else:
         transformedSubclause = nlp(transformedSubclause[1])
-    print(f"transformedSubclause after nlp: {transformedSubclause}")
     subclauseGoldstandard = None
 
     for token in transformedSubclause:
-        print(f"token: {token}")
         if token.dep_ == "ROOT":
             verbLemma = token.lemma_
-            print(f"verbLemma transformed: {verbLemma}")
             break
 
     for token in goldstandard:
         if token.pos_ == "VERB" and (token.lemma_ == verbLemma):
-            print("token lemma:  goldstandard")
-            print(token.lemma_)
             subclauseGoldstandard = token.subtree
             subclauseGoldstandard = "".join(
                 token.text + " "
@@ -57,16 +51,12 @@ def evaluate_sentence_results(
                 subclauseGoldstandard = subclauseGoldstandard[:-1]
             break
 
-    print(f"subclauseGoldstandard: {subclauseGoldstandard}")
-    print(f"transformedSubclauses: {transformedSubclause}")
-
     transformedSubclause = (
         transformedSubclause.text
         if isinstance(transformedSubclause, spacy.tokens.doc.Doc)
         else transformedSubclause
     )
 
-    # if lenSubclauseGoldstandard > lenTransformedSubclause:
     # If no subclause has been identified, the whole sentences are compared instead of the subclauses
     if subclauseGoldstandard == None or len(subclauseGoldstandard) == 0:
         subclauseGoldstandard = goldstandard.text
@@ -81,7 +71,5 @@ def evaluate_sentence_results(
     # Berechnen der Ähnlichkeit
     SBERT_similarity = util.pytorch_cos_sim(embedding1, embedding2)
     SBERT_similarity = SBERT_similarity.item()
-
-    print("SBERT Score:", SBERT_similarity)
 
     return SBERT_similarity

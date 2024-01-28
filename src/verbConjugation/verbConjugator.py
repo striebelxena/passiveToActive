@@ -41,27 +41,11 @@ def conjugateVerb(data):
     for ll, l, c, n in zip(
         aux_doc, aux_doc[1:], aux_doc[2:], aux_doc[3:]
     ):  # ll = last last, l = last, c = current, n = next
-        print("ll")
-        print(ll)
-        print("l")
-        print(l)
-        print(l.tag_)
-        print("c")
-        print(c)
-        print(c.tag_)
-        print("n")
-        print(n)
-        print(n.tag_)
-        print("finalaux")
-        print(finalAux)
-
         try:
             if c.lemma_ == ".":
                 continue
 
             if n.lemma_ == "not":
-                print("n.lemma")
-                print(n.lemma_)
                 if l.lemma_ == "be":
                     if n.text == "being":
                         finalAux.append(
@@ -87,8 +71,6 @@ def conjugateVerb(data):
                 elif c.lemma_ == "have":
                     num = pat.PLURAL if l.tag_ == "MD" else num
                     if num == "singular":
-                        print("third person")
-                        print(pat.tenses(c.text)[0][0])
                         if pat.tenses(c.text)[0][0] == "infinitive":
                             finalAux.append(
                                 pat.conjugate(
@@ -122,7 +104,6 @@ def conjugateVerb(data):
 
             elif c.lemma_ == "be":
                 if n.text == "being":
-                    print("progressive")
                     finalAux.append(
                         pat.conjugate("be", tense=pat.tenses(c.text)[0][0], number=num)
                     )
@@ -131,8 +112,6 @@ def conjugateVerb(data):
             elif c.lemma_ == "have":
                 num = pat.PLURAL if l.tag_ == "MD" else num
                 if num == "singular":
-                    print("third person")
-                    print(pat.tenses(c.text)[0][0])
                     if pat.tenses(c.text)[0][0] == "infinitive":
                         finalAux.append(
                             pat.conjugate("have", tense="present", person=3, number=num)
@@ -195,8 +174,6 @@ def conjugateVerb(data):
 
     finalAux = " ".join(finalAux)
     finalAux.lower().strip()
-    print("finalAux")
-    print(finalAux)
 
     try:
         # Conjugate main verb in active form
@@ -210,16 +187,7 @@ def conjugateVerb(data):
         if finalAux is not None and verbActive is not None:
             finalVerb["auxilaryVerb"] = finalAux
             finalVerb["activeVerb"] = verbActive
-            print("finalAux")
-            print(finalAux)
-            print("verbActive")
-            print(verbActive)
-        else:
-            print("One is NONE")
-            print("finalAux")
-            print(finalAux)
-            print("verbActive")
-            print(verbActive)
+
     except Exception as e:
         print(
             f"There has accured the following error during conjugating the active verb: {e}"
