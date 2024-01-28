@@ -48,7 +48,7 @@ python -m spacy download en_core_web_lg
 If there occurs an error during the installation of pattern, please try this command:
 
 ```
-conda install -c conda-forge pattern.
+conda install -c conda-forge pattern
 ```
 
 To being able to run the algorithm navigate to the source folder:
