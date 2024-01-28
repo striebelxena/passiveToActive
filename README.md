@@ -99,19 +99,17 @@ There are two options how the algorithm can be used:
    4. State whether you want to compare the output to a expected result
    5. If yes, insert your reference sentence
 2. **Transformation of several sentences at once:**
-   1. Prepare a csv-file with the following characteristics:
-      * One column called “InputSentence” with
-        the sentences which should be converted, one in each row
-      * The csv-file as to be located in the“data”
-        folder, otherwise the directory has to be changed accordingly
-      * If the output should be evaluated based on the ability of the algorithm to identify passive sentences and to transform them, the cvs-file needs a column called
-
+   1. Prepare a xlsx-file with the following characteristics:
+      * One column called “InputSentence” with the sentences which should be converted, one in each row 
+      * If the output should be evaluated based on the ability of the algorithm to identify passive sentences and to transform them, the file needs a column called
         * "ReferenceSentence", which
           inherits the expected output, i.e. the active sentence and another column called
         * "Mode", which inherits whether the InputSentence is indeed passive or active
    2. Run fileTransformation.py
-   3. State whether you want to evaluate the output
-   4. Output: The transformed sentences and, if evaluated, their semantic similarity score is saved to an new csv-file which per default will be created in the folder "data"
+   3. Insert the location where the input file is located
+   4. Insert the location where you want the output file to be saved
+   5. State whether you want to evaluate the output
+   6. Output: The transformed sentences and, if evaluated, their semantic similarity score is saved to a new xlsx.file, which you specified ealier
 
 ## Assumptions:
 
