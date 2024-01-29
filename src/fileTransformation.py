@@ -54,7 +54,7 @@ try:
     # Convert the sentences and save the output in a new column called "TransformedActiveSentence"
     transformed_data = []
     for sentence in tqdm(
-        df["InputSentence"], total=df.shape[0], desc="\nProcessing Sentences"
+        df["InputSentence"], total=df.shape[0], desc="Processing Sentences"
     ):
         if isinstance(sentence, str):
             result = pta.passiveToActive(sentence, source)
