@@ -59,13 +59,13 @@ To being able to run the algorithm navigate to the source folder:
 cd src
 ```
 
-To finally run the algorithm for one sentence use this command:
+To finally run the algorithm for one sentence use this command and follow the instructions:
 
 ```
 python singleTransformation.py
 ```
 
-To finally run the algorithm for a xlsx-file of sentences use this command:
+To finally run the algorithm for a xlsx-file of sentences use this command and follow the instruction:
 
 ```
 python fileTransformation.py
