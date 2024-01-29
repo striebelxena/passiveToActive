@@ -6,6 +6,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+singleTransformationGUITest.py
 typertest.py
 .Python
 /archive/

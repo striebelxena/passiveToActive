@@ -8,6 +8,7 @@ import questionary
 from rich.console import Console
 from rich.table import Table
 from rich import print as rprint
+import time
 
 console = Console()
 
@@ -51,17 +52,18 @@ try:
         raise ValueError("File needs to have a column named 'InputSentence'.")
 
     # Convert the sentences and save the output in a new column called "TransformedActiveSentence"
+    transformed_data = []
+    for sentence in tqdm(
+        df["InputSentence"], total=df.shape[0], desc="\nProcessing Sentences"
+    ):
+        if isinstance(sentence, str):
+            result = pta.passiveToActive(sentence, source)
+        else:
+            result = (sentence, "-")
+        transformed_data.append(result)
 
     df["TransformedActiveSentence"], df["TransformedSubclauses"] = zip(
-        *tqdm(
-            df["InputSentence"].apply(
-                lambda s: pta.passiveToActive(s, source)
-                if isinstance(s, str)
-                else (s, "-")
-            ),
-            total=df.shape[0],
-            desc="Processing Sentences",
-        )
+        *transformed_data
     )
 
     # replace empty strings with a default value

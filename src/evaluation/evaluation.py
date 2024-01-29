@@ -1,6 +1,9 @@
 import spacy
+import warnings
 
-# import pandas as pd
+# Suppress specific UserWarnings
+warnings.filterwarnings("ignore", category=UserWarning, module="torch._utils")
+
 
 # from bert_score import score
 from sentence_transformers import SentenceTransformer, util
