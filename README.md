@@ -70,6 +70,7 @@ To finally run the algorithm for a xlsx-file of sentences use this command and f
 ```
 python fileTransformation.py
 ```
+When the algorithm executed for the first time, it might take some time to load everything.
 
 Implementation Pipeline:
 ------------------------
