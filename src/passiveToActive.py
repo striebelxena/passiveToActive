@@ -139,11 +139,11 @@ def passiveToActive(sentence, source):
             newSubclause = current_sentence[start_index : end_index + 1]
             # newSubclause = [token.text for token in newSubclause]
             newSubclause = "".join(
-                token.text + " "
-                if token.text == ","
-                else token.text_with_ws
-                if not token.is_punct
-                else token.text
+                (
+                    token.text + " "
+                    if token.text == ","
+                    else token.text_with_ws if not token.is_punct else token.text
+                )
                 for token in newSubclause
             )
             if newSubclause.endswith(", "):

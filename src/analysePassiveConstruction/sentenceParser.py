@@ -139,10 +139,6 @@ def analyseSentence(sentence):
 
     # Iterate over the words in the sentence and assign the parts of the sentence to the corresponding variables
     for word in sentence:
-        print(f"word: {word}")
-        print(f"dep: {word.dep_}")
-        print(f"tag: {word.tag_}")
-
         try:
             # Check if the word has already been used/analysed
             if word.i not in usedIndex:
@@ -380,6 +376,5 @@ def analyseSentence(sentence):
         "mark": mark,
         "punc": punc,
     }
-    print(f"results: {results}")
 
     return results
