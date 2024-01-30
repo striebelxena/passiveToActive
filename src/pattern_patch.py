@@ -1,4 +1,4 @@
-import os.path
+"""import os.path
 import pattern.text
 
 from pattern.helpers import decode_string
@@ -9,9 +9,9 @@ decode_utf8 = decode_string
 
 
 def _read(path, encoding="utf-8", comment=";;;"):
-    """Returns an iterator over the lines in the file at the given path,
+    Returns an iterator over the lines in the file at the given path,
     strippping comments and decoding each line to Unicode.
-    """
+    
     if path:
         if isinstance(path, str) and os.path.exists(path):
             # From file path.
@@ -34,4 +34,4 @@ def _read(path, encoding="utf-8", comment=";;;"):
                 return
 
 
-pattern.text._read = _read
+pattern.text._read = _read"""

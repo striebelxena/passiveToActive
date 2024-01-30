@@ -14,6 +14,11 @@ noundict = {
 
 
 def inversion(noun):
+    """
+    Input: a noun
+    This function checks if the noun is in the dictionary and returns the inverted pronoun
+    Output: the inverted pronoun
+    """
     n = noun.lower()
     if n in noundict:
         newNoun = noundict[n]

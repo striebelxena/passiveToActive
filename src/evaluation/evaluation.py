@@ -1,7 +1,7 @@
 import spacy
 import warnings
 
-# Suppress specific UserWarnings
+# Suppress specific UserWarnings from torch._utils
 warnings.filterwarnings("ignore", category=UserWarning, module="torch._utils")
 
 
@@ -22,10 +22,7 @@ def evaluate_sentence_results(
     2. Calculate the dependency similarity score
     Output: the similarity score
     """
-    # goldstandard_bert = [goldstandard]
     goldstandard = nlp(goldstandard)
-    # transformed_bert = [transformedSentence]
-    # transformedSubclause_bert = [transformedSubclause]
     if source == "singleTransformation":
         transformedSubclause = nlp(transformedSubclause)
     else:
@@ -67,11 +64,10 @@ def evaluate_sentence_results(
 
     # SBERT
     model = SentenceTransformer("all-MiniLM-L6-v2")
-    # Berechnen der Einbettungen (Embeddings)
     embedding1 = model.encode(transformedSubclause, convert_to_tensor=False)
     embedding2 = model.encode(subclauseGoldstandard, convert_to_tensor=False)
 
-    # Berechnen der Ähnlichkeit
+    # Calculate cosine similarity
     SBERT_similarity = util.pytorch_cos_sim(embedding1, embedding2)
     SBERT_similarity = SBERT_similarity.item()
 

@@ -8,7 +8,6 @@ import questionary
 from rich.console import Console
 from rich.table import Table
 from rich import print as rprint
-import time
 
 console = Console()
 
@@ -100,6 +99,7 @@ try:
     # Calculate the semantic similarity score for each sentence with BERT
     def calculate_metrics(row):
         """
+        Input: similarity score of each transformation
         Based on the calculated semantic similarities this function calculates the metrics like TP, FP, TN, FN to evaluate the output with precision and recall.
 
         If the similarity score is higher than 0.999, the sentence is correctly transformed and the function returns 1
@@ -186,12 +186,15 @@ try:
 
     df.to_excel(output_file, index=False)
 
+    # Calculate the metrics
     FalseNegatives = FalseNegativesWronglyIdentified + FalseNegativesWronglyTransformed
     if (TruePositives + FalsePositives) != 0 and (TruePositives + FalseNegatives) != 0:
         recall = TruePositives / (TruePositives + FalseNegatives)
         precision = TruePositives / (TruePositives + FalsePositives)
         f1_score = 2 * ((precision * recall) / (precision + recall))
     rprint("\n[bold green]Transformation done.[/bold green]")
+
+    # Print the evaluation results
     if evaluation:
         table = Table(show_header=True, header_style="bold white")
         table.add_column("Metric", style="dim")

@@ -1,10 +1,12 @@
 def checkForPassive(sentence):
     """
+    Input: a sentence as a spacy object
+
     This function checks if the sentence is passive by checking if the dependency is a passive subject and if there is an auxilarry verb in passive
     It splits the sentence into pre, post and passive clause, saves all identified passive constructions and its components in a list
-    Also it saves the position of the passive construction in the original
-    Finally, it returns  the list of passive constructions, the list of pre clauses, the list of post clauses and the list of indices of the passive constructions in the original sentence
+    Also it saves the position of the passive construction in the original sentence
 
+    Output: a list of passive constructions, a list of pre clauses, a list of post clauses and a list of indices of the passive constructions in the original sentence
     """
     preClause = list()
     postClause = list()

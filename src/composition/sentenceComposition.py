@@ -29,7 +29,6 @@ def transformSentence(data, finalVerb, preClause, postClause):
     prep = data.get("prep")
     prep = " ".join(prep)
     xcomp = data.get("xcomp")
-    cconj = data.get("cconj")
     ccomp = data.get("ccomp")
     conj = data.get("conj")
     part = data.get("part")
@@ -56,7 +55,6 @@ def transformSentence(data, finalVerb, preClause, postClause):
             prepAtStart,
             cltreeAtStart,
             wsubj,
-            # alreadyExistingSubject,
             subject,
             auxilary,
             adverbBefore,

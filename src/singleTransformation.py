@@ -2,7 +2,6 @@ import passiveToActive as passiveToActive
 import evaluation.evaluation as ev
 import questionary
 from rich.console import Console
-from rich.table import Table
 from rich import print as rprint
 
 source = "singleTransformation"

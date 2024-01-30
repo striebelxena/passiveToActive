@@ -1,4 +1,3 @@
-# import pattern_patch
 import pattern.text.en as pat
 import spacy
 
@@ -15,7 +14,7 @@ def conjugateVerb(data):
     """
     This function takes the data from the sentence analysis and conjugates the verb accordingly.
 
-    Input: the output of the sentence analysis
+    Input: the output of the sentence analysis as dictionary
     Steps:
     1. Get the data from the sentence analysis
     2. Iterate through the auxilary verbs and conjugate them according to time, person and number

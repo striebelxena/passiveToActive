@@ -63,9 +63,7 @@ def passiveToActive(sentence, source):
                 passiveSentence = nlp(sentence.text)
 
                 # analyse the sentence
-                analysis_results = analyseSentence.analyseSentence(
-                    passiveSentence, source
-                )
+                analysis_results = analyseSentence.analyseSentence(passiveSentence)
 
                 # conjugate the verb
                 verbActive = verbConjugator.conjugateVerb(analysis_results)

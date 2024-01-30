@@ -4,7 +4,7 @@ import pattern.text.en as en
 nlp = spacy.load("en_core_web_lg")
 
 
-def analyseSentence(sentence, source):
+def analyseSentence(sentence):
     """
     Input: Sentence with a passive construction as a spacy object
 
@@ -51,7 +51,7 @@ def analyseSentence(sentence, source):
 
     def get_subtree(index):
         """
-        Input: Index of the current word in the sentence
+        Input: Index of the current word in the sentence as integer
         Steps:
         1. Get the subtree of the word and save indices of each word of the subtree in a list, to track the words that have already been "used"
         2. Handle punctuation
@@ -119,8 +119,7 @@ def analyseSentence(sentence, source):
 
     def add_index(index):
         """
-        Input: Index of the current word in the sentence
-        Steps:
+        Input: Index of the current word in the sentence as integer
         Add the index to the list of used indices
         """
         if index not in usedIndex:
@@ -128,9 +127,10 @@ def analyseSentence(sentence, source):
 
     def used_index(index):
         """
-        Input: Index of the current word in the sentence
-        Steps:
+        Input: Index of the current word in the sentence as integer
+
         Check if the index is already in the list of used indices
+        Output: True if the index is already in the list of used indices, False otherwise
         """
         if index in usedIndex:
             return True
@@ -139,8 +139,9 @@ def analyseSentence(sentence, source):
 
     # Iterate over the words in the sentence and assign the parts of the sentence to the corresponding variables
     for word in sentence:
-        # if word.head.i not in headIds:
-        # headIds.append(word.head.i)
+        print(f"word: {word}")
+        print(f"dep: {word.dep_}")
+        print(f"tag: {word.tag_}")
 
         try:
             # Check if the word has already been used/analysed
@@ -157,7 +158,7 @@ def analyseSentence(sentence, source):
                 # Check if the word is a passive subject or clause
                 if word.dep_ in ("nsubjpass", "csubjpass"):
                     subtree, atStart, startIndex = get_subtree(word.i)
-                    # check if the word is a w-word (who, what, where, when, why, how, that)
+                    # Check if the word is a w-word (who, what, where, when, why, how, that)
                     if (
                         word.tag_ == "WDT"
                         or word.tag_ == "WP"
@@ -165,7 +166,7 @@ def analyseSentence(sentence, source):
                         or word.text == "that"
                     ):
                         wsubjpass = subtree
-                    # check if the word is a noun assign it appropriately to the variable
+                    # Check if the word is a noun assign it appropriately to the variable
                     elif subjpass == "":
                         subjpass = subtree
                     elif verb == "":
@@ -379,5 +380,6 @@ def analyseSentence(sentence, source):
         "mark": mark,
         "punc": punc,
     }
+    print(f"results: {results}")
 
     return results
