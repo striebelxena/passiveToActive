@@ -172,9 +172,7 @@ Project Organization
 --------------------
 
     ├── LICENSE
-
     ├── README.md          <- The top-level README for all instructions and information
-
     │
     ├── documents              <- Folder with report, presentation, final human evaluation
     │
@@ -182,17 +180,16 @@ Project Organization
     ├── requirements.txt   <- The requirements file
     │
     │
-    ├── src                <- Source code for use in this project.
-    │   ├──__init__.py    <- Makes src a Python module
+    ├── src                <- Source code for to use in this project.
     │   │
-    │   ├── analysePassiveConstruction           <- function that parses and analyses the identified passive construction
+    │   ├── analysePassiveConstruction    <- function that parses and analyses the identified passive construction
     │   │
-    │   ├──archive       <- old files, in which other approaches were tried, however code might be not 		executable
+    │   ├──archive  <- old files, in which other approaches were tried, however code might be not executable
     │   │  
-    │   ├── checkForPassive         <- Function to check and identify passive constructions
-    │   ├── composition               <- function to compose the active sentence
-    │   ├── evaluation                   <- function to evaluate the output sentence
-    │   ├── verbConjugation         <- Function to conjugate the active verb
+    │   ├── checkForPassive         <- Folder with the function to check and identify passive constructions
+    │   ├── composition               <- Folder with the function to compose the active sentence
+    │   ├── evaluation                   <- Folder with the function to evaluate the output sentence
+    │   ├── verbConjugation         <- Folder with the function to conjugate the active verb
     │   ├── fileTransformation       <- Script to transform many sentences at once with an xlsx-file as input
     │   ├── passiveToActive           <- Main function for transformation
     │   └── singleTransformation   <- Script to transform one single sentence
